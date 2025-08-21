@@ -6,7 +6,7 @@ export default function Home() {
     ssr: false,
   });
   return (
-    <div className="bg-white">
+    <div>
       <GaugueComponent />
     </div>
   );

@@ -24,15 +24,14 @@ export function GeothermalGauge({ value }: { value?: number }) {
 
   return (
     <GaugeComponent
-      value={50}
+      value={20.2}
       type="radial"
       labels={{
         valueLabel: {
           formatTextValue: (value) => `${value}kW`,
           style: {
-            fill: "#2EB682",
+            fill: "#000000",
             fontSize: "30px",
-            fontWeight: "bold",
             stroke: "none",
             paintOrder: "normal",
           },

@@ -8,42 +8,50 @@ export const metadata: Metadata = {
 
 export default function DashboardPage() {
   return (
-    <>
+    <div className="w-full  font-3xl min-h-screen p-8 ">
       <h1 className="text-3xl font-bold mb-6">Energy Dashboard</h1>
       <div className="flex gap-6">
-        <section>
-          <div className="grid grid-cols-2 gap-6 auto-rows-fr">
-            <div className="w-full h-full flex items-center justify-center">
+        <section className="justify-center w-1/2 flex  border rounded-4xl bg-white shadow-2xl ">
+          <div className="grid grid-cols-2 gap-6 auto-rows-fr  pb-6">
+            <div className="w-full h-full flex  flex-col items-center justify-center ">
               <GeothermalGauge value={0} />
+              <span className="font-bold text-2xl">地熱発電</span>
             </div>
-            <div className="w-full h-full flex items-center justify-center">
+            <div className="w-full h-full flex  flex-col items-center justify-center ">
               <GeothermalGauge value={0} />
+              <span className="font-bold text-2xl">地熱発電</span>
             </div>
-            <div className="w-full h-full flex items-center justify-center">
+            <div className="w-full h-full flex  flex-col items-center justify-center ">
               <GeothermalGauge value={0} />
+              <span className="font-bold text-2xl">地熱発電</span>
             </div>
-            <div className="w-full h-full flex items-center justify-center">
+            <div className="w-full h-full flex  flex-col items-center justify-center ">
               <GeothermalGauge value={0} />
+              <span className="font-bold text-2xl">地熱発電</span>
             </div>
           </div>
         </section>
-        <section>
-          <div className="grid grid-cols-2 gap-6 auto-rows-fr">
-            <div className="w-full h-full flex items-center justify-center">
+        <section className="justify-center w-1/2 flex  border rounded-4xl bg-white shadow-2xl ">
+          <div className="grid grid-cols-2 gap-6 auto-rows-fr  pb-6">
+            <div className="w-full h-full flex  flex-col items-center justify-center ">
               <GeothermalGauge value={0} />
+              <span className="font-bold text-2xl">地熱発電</span>
             </div>
-            <div className="w-full h-full flex items-center justify-center">
+            <div className="w-full h-full flex  flex-col items-center justify-center ">
               <GeothermalGauge value={0} />
+              <span className="font-bold text-2xl">地熱発電</span>
             </div>
-            <div className="w-full h-full flex items-center justify-center">
+            <div className="w-full h-full flex  flex-col items-center justify-center ">
               <GeothermalGauge value={0} />
+              <span className="font-bold text-2xl">地熱発電</span>
             </div>
-            <div className="w-full h-full flex items-center justify-center">
+            <div className="w-full h-full flex  flex-col items-center justify-center ">
               <GeothermalGauge value={0} />
+              <span className="font-bold text-2xl">地熱発電</span>
             </div>
           </div>
         </section>
       </div>
-    </>
+    </div>
   );
 }
