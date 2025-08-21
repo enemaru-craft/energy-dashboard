@@ -24,14 +24,50 @@ export function GeothermalGauge({ value }: { value?: number }) {
 
   return (
     <GaugeComponent
+      value={50}
       type="radial"
-      arc={{
-        colorArray: ["#5BE12C", "#EA4228"],
-        subArcs: [{ limit: 10 }, { limit: 30 }, {}, {}, {}],
-        padding: 0.02,
-        width: 0.3,
+      labels={{
+        valueLabel: {
+          formatTextValue: (value) => `${value}kW`,
+          style: {
+            fill: "#2EB682",
+            fontSize: "30px",
+            fontWeight: "bold",
+            stroke: "none",
+            paintOrder: "normal",
+          },
+        },
+        tickLabels: {
+          type: "inner",
+          ticks: [
+            { value: 20 },
+            { value: 40 },
+            { value: 60 },
+            { value: 80 },
+            { value: 100 },
+          ],
+        },
       }}
-      value={80}
+      arc={{
+        gradient: true,
+        // 3色で指定 → 最初と最後の2色は緑グラデーション、最後は赤で固定
+        colorArray: ["#C2EE70", "#3CDF9C", "#0CF3B2", "#3ED6A4"],
+        subArcs: [
+          { limit: 30 }, // 0〜30% は 緑グラデーション
+          { limit: 60 }, // 0〜30% は 緑グラデーション
+          { limit: 90 }, // 30〜90% は 緑グラデーション
+          { limit: 100 }, // 90〜100% は 赤
+        ],
+        padding: 0,
+        width: 0.2,
+      }}
+      pointer={{
+        color: "#2EB682",
+        length: 0.7,
+        width: 18,
+        elastic: true,
+        animationDelay: 0,
+      }}
     />
   );
 }
