@@ -1,5 +1,7 @@
 import { GeothermalGauge } from "./Gauge";
 import type { Metadata } from "next";
+import { PowerLineChart } from "./PowerChart";
+import { PowerMap } from "./Map";
 
 export const metadata: Metadata = {
   title: "Energy Dashboard",
@@ -7,6 +9,11 @@ export const metadata: Metadata = {
 };
 
 export default function DashboardPage() {
+  const labels = ["0:00", "1:00", "2:00", "3:00", "4:00", "5:00", "6:00"];
+  const geothermal = [10, 12, 11, 13, 12, 14, 15];
+  const hydro = [20, 22, 21, 23, 22, 24, 25];
+  const wind = [5, 7, 6, 8, 7, 9, 10];
+  const solar = [0, 0, 5, 10, 15, 20, 25];
   return (
     <div className="w-full  font-3xl min-h-screen p-8 ">
       <h1 className="text-3xl font-bold mb-6">Energy Dashboard</h1>
@@ -22,46 +29,78 @@ export default function DashboardPage() {
           </p>
         </div>
       </section>
+
       <div className="flex gap-6">
-        <section className="justify-center w-1/2 flex  border rounded-4xl bg-white shadow-2xl ">
-          <div className="grid grid-cols-2 gap-6 auto-rows-fr  pb-6">
-            <div className="w-full h-full flex  flex-col items-center justify-center ">
+        <section className="w-1/2 flex border rounded-4xl bg-white shadow-2xl p-6">
+          <div className="grid grid-cols-4 gap-10 w-full">
+            <div className="flex flex-col items-center justify-center">
               <GeothermalGauge value={0} />
               <span className="font-bold text-2xl">地熱発電</span>
             </div>
-            <div className="w-full h-full flex  flex-col items-center justify-center ">
+            <div className="flex flex-col items-center justify-center">
               <GeothermalGauge value={0} />
-              <span className="font-bold text-2xl">地熱発電</span>
+              <span className="font-bold text-2xl">水力発電</span>
             </div>
-            <div className="w-full h-full flex  flex-col items-center justify-center ">
+            <div className="flex flex-col items-center justify-center">
               <GeothermalGauge value={0} />
-              <span className="font-bold text-2xl">地熱発電</span>
+              <span className="font-bold text-2xl">風力発電</span>
             </div>
-            <div className="w-full h-full flex  flex-col items-center justify-center ">
+            <div className="flex flex-col items-center justify-center">
               <GeothermalGauge value={0} />
-              <span className="font-bold text-2xl">地熱発電</span>
+              <span className="font-bold text-2xl">太陽光発電</span>
             </div>
           </div>
         </section>
-        <section className="justify-center w-1/2 flex  border rounded-4xl bg-white shadow-2xl ">
-          <div className="grid grid-cols-2 gap-6 auto-rows-fr  pb-6">
-            <div className="w-full h-full flex  flex-col items-center justify-center ">
+
+        <section className="w-1/2 flex border rounded-4xl bg-white shadow-2xl p-6">
+          <div className="grid grid-cols-4 gap-10 w-full">
+            <div className="flex flex-col items-center justify-center">
               <GeothermalGauge value={0} />
               <span className="font-bold text-2xl">地熱発電</span>
             </div>
-            <div className="w-full h-full flex  flex-col items-center justify-center ">
+            <div className="flex flex-col items-center justify-center">
               <GeothermalGauge value={0} />
-              <span className="font-bold text-2xl">地熱発電</span>
+              <span className="font-bold text-2xl">水力発電</span>
             </div>
-            <div className="w-full h-full flex  flex-col items-center justify-center ">
+            <div className="flex flex-col items-center justify-center">
               <GeothermalGauge value={0} />
-              <span className="font-bold text-2xl">地熱発電</span>
+              <span className="font-bold text-2xl">風力発電</span>
             </div>
-            <div className="w-full h-full flex  flex-col items-center justify-center ">
+            <div className="flex flex-col items-center justify-center">
               <GeothermalGauge value={0} />
-              <span className="font-bold text-2xl">地熱発電</span>
+              <span className="font-bold text-2xl">太陽光発電</span>
             </div>
           </div>
+        </section>
+      </div>
+
+      <div className="flex gap-6 mb-6 mt-6">
+        <section className="flex-1 border rounded-4xl bg-white shadow-2xl p-6 mb-6">
+          <PowerLineChart
+            timeLabels={labels}
+            geothermal={geothermal}
+            hydro={hydro}
+            wind={wind}
+            solar={solar}
+          />
+        </section>
+        <section className="flex-1 border rounded-4xl bg-white shadow-2xl p-6 mb-6">
+          <PowerLineChart
+            timeLabels={labels}
+            geothermal={geothermal}
+            hydro={hydro}
+            wind={wind}
+            solar={solar}
+          />
+        </section>
+      </div>
+
+      <div className="flex  gap-6 mb-6 mt-6">
+        <section className="border rounded-4xl bg-white shadow-2xl p-6 mb-6 flex-1">
+          <PowerMap id="map1" />
+        </section>
+        <section className="border rounded-4xl bg-white shadow-2xl p-6 mb-6 flex-1">
+          <PowerMap id="map2" />
         </section>
       </div>
     </div>
