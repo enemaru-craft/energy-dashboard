@@ -9,11 +9,6 @@ export const metadata: Metadata = {
 };
 
 export default function DashboardPage() {
-  const labels = ["0:00", "1:00", "2:00", "3:00", "4:00", "5:00", "6:00"];
-  const geothermal = [10, 12, 11, 13, 12, 14, 15];
-  const hydro = [20, 22, 21, 23, 22, 24, 25];
-  const wind = [5, 7, 6, 8, 7, 9, 10];
-  const solar = [0, 0, 5, 10, 15, 20, 25];
   return (
     <div className="w-full  font-3xl min-h-screen p-8 ">
       <h1 className="text-3xl font-bold mb-6">Energy Dashboard</h1>
@@ -75,22 +70,10 @@ export default function DashboardPage() {
 
       <div className="flex gap-6 mb-6 mt-6">
         <section className="flex-1 border rounded-4xl bg-white shadow-2xl p-6 mb-6">
-          <PowerLineChart
-            timeLabels={labels}
-            geothermal={geothermal}
-            hydro={hydro}
-            wind={wind}
-            solar={solar}
-          />
+          <PowerLineChart sessionId="10" />
         </section>
         <section className="flex-1 border rounded-4xl bg-white shadow-2xl p-6 mb-6">
-          <PowerLineChart
-            timeLabels={labels}
-            geothermal={geothermal}
-            hydro={hydro}
-            wind={wind}
-            solar={solar}
-          />
+          <PowerLineChart sessionId="10" />
         </section>
       </div>
 
