@@ -1,6 +1,6 @@
-// components/PowerLineChart.tsx
 "use client";
 
+import { useState, useEffect } from "react";
 import { Line } from "react-chartjs-2";
 import {
   Chart as ChartJS,
@@ -11,7 +11,7 @@ import {
   Title,
   Tooltip,
   Legend,
-  Filler, // 塗りつぶしに必要
+  Filler,
 } from "chart.js";
 
 ChartJS.register(
@@ -25,7 +25,7 @@ ChartJS.register(
   Filler
 );
 
-interface PowerLineChartProps {
+interface PowerChartData {
   timeLabels: string[];
   geothermal: number[];
   hydro: number[];
@@ -33,43 +33,81 @@ interface PowerLineChartProps {
   solar: number[];
 }
 
-export const PowerLineChart = ({
-  timeLabels,
-  geothermal,
-  hydro,
-  wind,
-  solar,
-}: PowerLineChartProps) => {
-  const data = {
-    labels: timeLabels,
+interface PowerLineChartProps {
+  sessionId: string;
+}
+
+export const PowerLineChart = ({ sessionId }: PowerLineChartProps) => {
+  const [data, setData] = useState<PowerChartData | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      setLoading(true);
+      setError(null);
+      try {
+        const res = await fetch(
+          `${process.env.NEXT_PUBLIC_BASE_URL}/get-power-history?session_id=${sessionId}`
+        );
+        if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
+        const json: PowerChartData = await res.json();
+        console.log(json);
+        setData(json);
+      } catch (err: any) {
+        console.error(err);
+        setError(err.message || "Failed to fetch power history");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, [sessionId]);
+
+  if (loading) return <p>Loading power history...</p>;
+  if (error) return <p>Error: {error}</p>;
+  if (!data) return <p>No data available</p>;
+
+  // timeLabels を「時:分」に変換 (+9時間)
+  const labels = data.timeLabels.map((t) => {
+    const dt = new Date(t);
+    dt.setHours(dt.getHours() + 9); // 必要なら削除
+    const h = dt.getHours().toString().padStart(2, "0");
+    const m = dt.getMinutes().toString().padStart(2, "0");
+    return `${h}:${m}`;
+  });
+
+  const chartData = {
+    labels,
     datasets: [
       {
         label: "地熱",
-        data: geothermal,
+        data: data.geothermal,
         borderColor: "#f87171",
-        backgroundColor: "rgba(248,113,113,0.4)", // 赤 半透明
-        fill: true, // 下（x軸まで）塗る
+        backgroundColor: "rgba(248,113,113,0.4)",
+        fill: true,
       },
       {
         label: "水力",
-        data: hydro,
+        data: data.hydro,
         borderColor: "#60a5fa",
-        backgroundColor: "rgba(96,165,250,0.4)", // 青 半透明
-        fill: "-1", // 地熱まで塗る
+        backgroundColor: "rgba(96,165,250,0.4)",
+        fill: "-1",
       },
       {
         label: "風力",
-        data: wind,
+        data: data.wind,
         borderColor: "#34d399",
-        backgroundColor: "rgba(52,211,153,0.4)", // 緑 半透明
-        fill: "-1", // 水力まで塗る
+        backgroundColor: "rgba(52,211,153,0.4)",
+        fill: "-1",
       },
       {
         label: "太陽光",
-        data: solar,
+        data: data.solar,
         borderColor: "#fbbf24",
-        backgroundColor: "rgba(251,191,36,0.4)", // 黄 半透明
-        fill: "-1", // 風力まで塗る
+        backgroundColor: "rgba(251,191,36,0.4)",
+        fill: "-1",
       },
     ],
   };
@@ -77,31 +115,20 @@ export const PowerLineChart = ({
   const options = {
     responsive: true,
     plugins: {
-      legend: {
-        position: "top" as const,
-      },
-      title: {
-        display: true,
-        text: "発電量推移",
-      },
+      legend: { position: "top" as const },
+      title: { display: true, text: "発電量推移" },
     },
     scales: {
       y: {
-        stacked: true, // 積み上げ必須
-        title: {
-          display: true,
-          text: "発電量 (kW)",
-        },
+        stacked: true,
+        title: { display: true, text: "総発電量 (kW)" },
       },
       x: {
         stacked: true,
-        title: {
-          display: true,
-          text: "時間",
-        },
+        title: { display: true, text: "時間" },
       },
     },
   };
 
-  return <Line data={data} options={options} />;
+  return <Line data={chartData} options={options} />;
 };
