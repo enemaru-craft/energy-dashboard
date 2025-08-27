@@ -6,14 +6,22 @@ import { useEffect, useState } from "react";
 
 const GaugeComponent = dynamic(() => import("react-gauge-component"), {});
 
-export function GeothermalGauge({ value }: { value?: number }) {
-  const [val, setVal] = useState(value ?? 0);
-
+export function Gauge({
+  deviceType,
+  sessionId,
+}: {
+  deviceType: string;
+  sessionId: string;
+}) {
+  const [value, setValue] = useState(0);
   useEffect(() => {
+    console.log(process.env.NEXT_PUBLIC_BASE_URL);
     async function fetchData() {
-      const res = await fetch("/api/energy");
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_BASE_URL}/get-latest-power?device_type=${deviceType}&session_id=${sessionId}`
+      );
       const data = await res.json();
-      setVal(data.current);
+      setValue(data.latestPower);
     }
     fetchData();
 
@@ -24,7 +32,7 @@ export function GeothermalGauge({ value }: { value?: number }) {
 
   return (
     <GaugeComponent
-      value={20.2}
+      value={value}
       type="radial"
       labels={{
         valueLabel: {
@@ -69,80 +77,4 @@ export function GeothermalGauge({ value }: { value?: number }) {
       }}
     />
   );
-}
-
-export function SolarGauge({ value }: { value?: number }) {
-  const [val, setVal] = useState(value ?? 0);
-
-  useEffect(() => {
-    async function fetchData() {
-      const res = await fetch("/api/energy");
-      const data = await res.json();
-      setVal(data.current);
-    }
-    fetchData();
-
-    // 10秒ごとに更新
-    const timer = setInterval(fetchData, 10000);
-    return () => clearInterval(timer);
-  }, []);
-
-  return <GaugeComponent value={val} />;
-}
-
-export function WindGauge({ value }: { value?: number }) {
-  const [val, setVal] = useState(value ?? 0);
-
-  useEffect(() => {
-    async function fetchData() {
-      const res = await fetch("/api/energy");
-      const data = await res.json();
-      setVal(data.current);
-    }
-    fetchData();
-
-    // 10秒ごとに更新
-    const timer = setInterval(fetchData, 10000);
-    return () => clearInterval(timer);
-  }, []);
-
-  return <GaugeComponent value={val} />;
-}
-
-export function HydrogenGauge({ value }: { value?: number }) {
-  const [val, setVal] = useState(value ?? 0);
-
-  useEffect(() => {
-    async function fetchData() {
-      const res = await fetch("/api/energy");
-      const data = await res.json();
-      setVal(data.current);
-    }
-    fetchData();
-
-    // 10秒ごとに更新
-    const timer = setInterval(fetchData, 10000);
-    return () => clearInterval(timer);
-  }, []);
-
-  return <GaugeComponent value={val} />;
-}
-
-export function HandCrankGauge({ value }: { value?: number }) {
-  const [val, setVal] = useState(value ?? 0);
-
-  useEffect(() => {
-    async function fetchData() {
-      const res = await fetch("/api/energy");
-      const data = await res.json();
-      setVal(data.current);
-    }
-    fetchData();
-
-    // 10秒ごとに更新
-    const timer = setInterval(fetchData, 10000);
-    return () => clearInterval(timer);
-  }, []);
-
-  return <GaugeComponent value={val} />;
 }
