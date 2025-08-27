@@ -79,10 +79,10 @@ export default function DashboardPage() {
 
       <div className="flex  gap-6 mb-6 mt-6">
         <section className="border rounded-4xl bg-white shadow-2xl p-6 mb-6 flex-1">
-          <PowerMap id="map1" />
+          <PowerMap mapId="map1" sessionId="10" />
         </section>
         <section className="border rounded-4xl bg-white shadow-2xl p-6 mb-6 flex-1">
-          <PowerMap id="map2" />
+          <PowerMap mapId="map2" sessionId="10" />
         </section>
       </div>
     </div>
