@@ -1,7 +1,7 @@
 // components/PowerMap.tsx
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect } from "react";
 import "leaflet/dist/leaflet.css";
 import L from "leaflet";
 
@@ -19,15 +19,22 @@ export function PowerMap({
       (container as any)._leaflet_id = null;
     }
 
-    const map = L.map(mapId).setView([35.10359, 137.14916], 5);
+    const map = L.map(mapId).setView([35.10324, 137.14731], 20);
 
     L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
       attribution:
         '&copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors',
     }).addTo(map);
 
-    // マーカーを追加
-    const deviceTypes = ["geothermal", "solar", "hydrogen", "wind"];
+    // デバイスごとの色
+    const colors: Record<string, string> = {
+      hydrogen: "blue",
+      geothermal: "red",
+      wind: "green",
+      solar: "yellow",
+    };
+
+    const deviceTypes = Object.keys(colors);
 
     async function addMarkers() {
       for (const deviceType of deviceTypes) {
@@ -42,7 +49,12 @@ export function PowerMap({
           const power = data.latestPower;
 
           if (!isNaN(lat) && !isNaN(lon)) {
-            L.marker([lat, lon])
+            L.circleMarker([lat, lon], {
+              radius: 7, // 円の大きさ
+              color: colors[deviceType], // 枠線の色
+              fillColor: colors[deviceType], // 中の色
+              fillOpacity: 0.8,
+            })
               .addTo(map)
               .bindPopup(`${deviceType}: ${power} kW`);
           }
