@@ -2,6 +2,7 @@ import { Gauge } from "./Gauge";
 import type { Metadata } from "next";
 import { PowerLineChart } from "./PowerChart";
 import { PowerMap } from "./Map";
+import GetSessionID from "./variable";
 
 export const metadata: Metadata = {
   title: "Energy Dashboard",
@@ -29,19 +30,19 @@ export default function DashboardPage() {
         <section className="w-1/2 flex border rounded-4xl bg-white shadow-2xl p-6">
           <div className="grid grid-cols-4 gap-10 w-full">
             <div className="flex flex-col items-center justify-center">
-              <Gauge deviceType="geothermal" sessionId="10" />
+              <Gauge deviceType="geothermal" sessionId={GetSessionID()} />
               <span className="font-bold text-2xl">地熱発電</span>
             </div>
             <div className="flex flex-col items-center justify-center">
-              <Gauge deviceType="hydrogen" sessionId="10" />
+              <Gauge deviceType="hydrogen" sessionId={GetSessionID()} />
               <span className="font-bold text-2xl">水力発電</span>
             </div>
             <div className="flex flex-col items-center justify-center">
-              <Gauge deviceType="wind" sessionId="10" />
+              <Gauge deviceType="wind" sessionId={GetSessionID()} />
               <span className="font-bold text-2xl">風力発電</span>
             </div>
             <div className="flex flex-col items-center justify-center">
-              <Gauge deviceType="solar" sessionId="10" />
+              <Gauge deviceType="solar" sessionId={GetSessionID()} />
               <span className="font-bold text-2xl">太陽光発電</span>
             </div>
           </div>
@@ -49,19 +50,19 @@ export default function DashboardPage() {
         <section className="w-1/2 flex border rounded-4xl bg-white shadow-2xl p-6">
           <div className="grid grid-cols-4 gap-10 w-full">
             <div className="flex flex-col items-center justify-center">
-              <Gauge deviceType="geothermal" sessionId="10" />
+              <Gauge deviceType="geothermal" sessionId={GetSessionID()} />
               <span className="font-bold text-2xl">地熱発電</span>
             </div>
             <div className="flex flex-col items-center justify-center">
-              <Gauge deviceType="hydrogen" sessionId="10" />
+              <Gauge deviceType="hydrogen" sessionId={GetSessionID()} />
               <span className="font-bold text-2xl">水力発電</span>
             </div>
             <div className="flex flex-col items-center justify-center">
-              <Gauge deviceType="wind" sessionId="10" />
+              <Gauge deviceType="wind" sessionId={GetSessionID()} />
               <span className="font-bold text-2xl">風力発電</span>
             </div>
             <div className="flex flex-col items-center justify-center">
-              <Gauge deviceType="solar" sessionId="10" />
+              <Gauge deviceType="solar" sessionId={GetSessionID()} />
               <span className="font-bold text-2xl">太陽光発電</span>
             </div>
           </div>
@@ -70,19 +71,19 @@ export default function DashboardPage() {
 
       <div className="flex gap-6 mb-6 mt-6">
         <section className="flex-1 border rounded-4xl bg-white shadow-2xl p-6 mb-6">
-          <PowerLineChart sessionId="10" />
+          <PowerLineChart sessionId={GetSessionID()} />
         </section>
         <section className="flex-1 border rounded-4xl bg-white shadow-2xl p-6 mb-6">
-          <PowerLineChart sessionId="10" />
+          <PowerLineChart sessionId={GetSessionID()} />
         </section>
       </div>
 
       <div className="flex  gap-6 mb-6 mt-6">
         <section className="border rounded-4xl bg-white shadow-2xl p-6 mb-6 flex-1">
-          <PowerMap mapId="map1" sessionId="10" />
+          <PowerMap mapId="map1" sessionId={GetSessionID()} />
         </section>
         <section className="border rounded-4xl bg-white shadow-2xl p-6 mb-6 flex-1">
-          <PowerMap mapId="map2" sessionId="10" />
+          <PowerMap mapId="map2" sessionId={GetSessionID()} />
         </section>
       </div>
     </div>

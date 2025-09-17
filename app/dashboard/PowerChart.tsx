@@ -43,8 +43,9 @@ export const PowerLineChart = ({ sessionId }: PowerLineChartProps) => {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
+    let intervalId: NodeJS.Timeout;
+
     const fetchData = async () => {
-      setLoading(true);
       setError(null);
       try {
         const res = await fetch(
@@ -52,7 +53,6 @@ export const PowerLineChart = ({ sessionId }: PowerLineChartProps) => {
         );
         if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
         const json: PowerChartData = await res.json();
-        console.log(json);
         setData(json);
       } catch (err: any) {
         console.error(err);
@@ -62,7 +62,14 @@ export const PowerLineChart = ({ sessionId }: PowerLineChartProps) => {
       }
     };
 
+    // 初回即時実行
     fetchData();
+
+    // 3秒ごとにデータ再取得
+    intervalId = setInterval(fetchData, 3000);
+
+    // クリーンアップ
+    return () => clearInterval(intervalId);
   }, [sessionId]);
 
   if (loading) return <p>Loading power history...</p>;

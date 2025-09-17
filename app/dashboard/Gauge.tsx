@@ -26,7 +26,7 @@ export function Gauge({
     fetchData();
 
     // 10秒ごとに更新
-    const timer = setInterval(fetchData, 10000);
+    const timer = setInterval(fetchData, 3000);
     return () => clearInterval(timer);
   }, []);
 
