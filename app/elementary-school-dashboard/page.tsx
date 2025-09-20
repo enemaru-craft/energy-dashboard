@@ -96,20 +96,20 @@ export default function DashboardPage() {
             onClick={() => setIsMenuOpen(!isMenuOpen)}
             className="bg-white/90 hover:bg-white border border-gray-300 rounded-lg p-3 shadow-lg transition-all duration-200"
           >
-            <div className="w-6 h-6 flex flex-col justify-center items-center">
+            <div className="w-6 h-6 flex flex-col justify-between items-center py-1">
               <div
                 className={`h-0.5 w-6 bg-gray-600 transition-all duration-300 ${
-                  isMenuOpen ? "rotate-45 translate-y-1.5" : ""
+                  isMenuOpen ? "rotate-45 translate-y-2" : ""
                 }`}
               ></div>
               <div
-                className={`h-0.5 w-6 bg-gray-600 transition-all duration-300 my-1 ${
+                className={`h-0.5 w-6 bg-gray-600 transition-all duration-300 ${
                   isMenuOpen ? "opacity-0" : ""
                 }`}
               ></div>
               <div
                 className={`h-0.5 w-6 bg-gray-600 transition-all duration-300 ${
-                  isMenuOpen ? "-rotate-45 -translate-y-1.5" : ""
+                  isMenuOpen ? "-rotate-45 -translate-y-2" : ""
                 }`}
               ></div>
             </div>
