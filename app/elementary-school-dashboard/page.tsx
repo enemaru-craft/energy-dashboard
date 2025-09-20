@@ -149,53 +149,74 @@ export default function DashboardPage() {
           <div className="absolute inset-0 bg-black/30 backdrop-blur-sm"></div>
 
           {/* モーダル本体 */}
-          <div className="relative bg-white/90 rounded-2xl shadow-2xl p-8 w-96 z-10">
+          <div className="relative bg-white/90 rounded-2xl shadow-2xl p-8 w-fit max-w-4xl z-10">
             <h1 className="text-2xl font-bold mb-6 text-center">
               チーム情報を入力してください
             </h1>
-            <div className="mb-4">
-              <label className="block mb-2">Team 1 名前</label>
-              <input
-                type="text"
-                value={team1Name}
-                onChange={(e) => setTeam1Name(e.target.value)}
-                className="w-full border p-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
-                placeholder="例: 寿司"
-              />
+
+            {/* 2チーム横並びレイアウト */}
+            <div className="flex gap-8 mb-6">
+              {/* Team 1 */}
+              <div className="flex-1 min-w-72">
+                <h2 className="text-lg font-semibold mb-4 text-center text-blue-600">
+                  Team 1
+                </h2>
+                <div className="mb-4">
+                  <label className="block mb-2 font-medium">チーム名</label>
+                  <input
+                    type="text"
+                    value={team1Name}
+                    onChange={(e) => setTeam1Name(e.target.value)}
+                    className="w-full border border-gray-300 p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    placeholder="例: 寿司"
+                  />
+                </div>
+                <div className="mb-4">
+                  <label className="block mb-2 font-medium">Session ID</label>
+                  <input
+                    type="text"
+                    value={sessionId1}
+                    onChange={(e) => setSessionId1(e.target.value)}
+                    className="w-full border border-gray-300 p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    placeholder="例: session1"
+                  />
+                </div>
+              </div>
+
+              {/* 区切り線 */}
+              <div className="w-px bg-gray-300"></div>
+
+              {/* Team 2 */}
+              <div className="flex-1 min-w-72">
+                <h2 className="text-lg font-semibold mb-4 text-center text-red-600">
+                  Team 2
+                </h2>
+                <div className="mb-4">
+                  <label className="block mb-2 font-medium">チーム名</label>
+                  <input
+                    type="text"
+                    value={team2Name}
+                    onChange={(e) => setTeam2Name(e.target.value)}
+                    className="w-full border border-gray-300 p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent"
+                    placeholder="例: 天ぷら"
+                  />
+                </div>
+                <div className="mb-4">
+                  <label className="block mb-2 font-medium">Session ID</label>
+                  <input
+                    type="text"
+                    value={sessionId2}
+                    onChange={(e) => setSessionId2(e.target.value)}
+                    className="w-full border border-gray-300 p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent"
+                    placeholder="例: session2"
+                  />
+                </div>
+              </div>
             </div>
-            <div className="mb-4">
-              <label className="block mb-2">Team 1 Session ID</label>
-              <input
-                type="text"
-                value={sessionId1}
-                onChange={(e) => setSessionId1(e.target.value)}
-                className="w-full border p-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
-                placeholder="例: session1"
-              />
-            </div>
-            <div className="mb-4">
-              <label className="block mb-2">Team 2 名前</label>
-              <input
-                type="text"
-                value={team2Name}
-                onChange={(e) => setTeam2Name(e.target.value)}
-                className="w-full border p-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
-                placeholder="例: 天ぷら"
-              />
-            </div>
-            <div className="mb-6">
-              <label className="block mb-2">Team 2 Session ID</label>
-              <input
-                type="text"
-                value={sessionId2}
-                onChange={(e) => setSessionId2(e.target.value)}
-                className="w-full border p-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
-                placeholder="例: session2"
-              />
-            </div>
+
             <button
               onClick={handleSave}
-              className="w-full bg-blue-500 text-white py-2 rounded-lg hover:bg-blue-600 transition"
+              className="w-full bg-blue-500 text-white py-3 px-6 rounded-lg hover:bg-blue-600 transition-colors duration-200 font-medium"
             >
               決定
             </button>
