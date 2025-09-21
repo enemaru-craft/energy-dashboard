@@ -76,12 +76,10 @@ export const PowerLineChart = ({ sessionId }: PowerLineChartProps) => {
   if (error) return <p>Error: {error}</p>;
   if (!data) return <p>No data available</p>;
 
-  // timeLabels を「時:分」に変換 (+9時間)
   const labels = data.timeLabels.map((t) => {
     const dt = new Date(t);
-    dt.setHours(dt.getHours() + 9); // 必要なら削除
-    const h = dt.getHours().toString().padStart(2, "0");
-    const m = dt.getMinutes().toString().padStart(2, "0");
+    const h = dt.getUTCHours().toString().padStart(2, "0");
+    const m = dt.getUTCMinutes().toString().padStart(2, "0");
     return `${h}:${m}`;
   });
 
