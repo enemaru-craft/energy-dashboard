@@ -76,12 +76,7 @@ export const PowerLineChart = ({ sessionId }: PowerLineChartProps) => {
   if (error) return <p>Error: {error}</p>;
   if (!data) return <p>No data available</p>;
 
-  const labels = data.timeLabels.map((t) => {
-    const dt = new Date(t);
-    const h = dt.getUTCHours().toString().padStart(2, "0");
-    const m = dt.getUTCMinutes().toString().padStart(2, "0");
-    return `${h}:${m}`;
-  });
+  const labels = data.timeLabels;
 
   const chartData = {
     labels,
@@ -126,6 +121,7 @@ export const PowerLineChart = ({ sessionId }: PowerLineChartProps) => {
     scales: {
       y: {
         stacked: true,
+
         title: { display: true, text: "総発電量 (kW)" },
       },
       x: {
