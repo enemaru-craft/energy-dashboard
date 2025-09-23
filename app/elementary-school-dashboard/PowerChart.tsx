@@ -121,7 +121,7 @@ export const PowerLineChart = ({ sessionId }: PowerLineChartProps) => {
     scales: {
       y: {
         stacked: true,
-
+        beginAtZero: true,
         title: { display: true, text: "総発電量 (kW)" },
       },
       x: {
