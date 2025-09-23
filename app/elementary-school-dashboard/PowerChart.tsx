@@ -76,35 +76,56 @@ export const PowerLineChart = ({ sessionId }: PowerLineChartProps) => {
   if (error) return <p>Error: {error}</p>;
   if (!data) return <p>No data available</p>;
 
-  const labels = data.timeLabels;
+  // 時間軸とデータの処理
+  let labels = data.timeLabels;
+  let geothermalData = data.geothermal;
+  let hydroData = data.hydro;
+  let windData = data.wind;
+  let solarData = data.solar;
+
+  // データが1つしかない場合、1分前の時間を追加
+  if (labels.length === 1) {
+    const currentTime = new Date(labels[0]);
+    const previousTime = new Date(currentTime.getTime() - 60000); // 1分前
+    const previousTimeString = previousTime.toISOString();
+
+    // 時間軸に1分前を追加（最初に配置）
+    labels = [previousTimeString, ...labels];
+
+    // 各発電量データに0を追加（最初に配置）
+    geothermalData = [0, ...geothermalData];
+    hydroData = [0, ...hydroData];
+    windData = [0, ...windData];
+    solarData = [0, ...solarData];
+  }
 
   const chartData = {
     labels,
     datasets: [
       {
         label: "地熱",
-        data: data.geothermal,
+        data: geothermalData,
         borderColor: "#f87171",
         backgroundColor: "rgba(248,113,113,0.4)",
         fill: true,
       },
       {
         label: "水力",
-        data: data.hydro,
+        data: hydroData,
         borderColor: "#60a5fa",
         backgroundColor: "rgba(96,165,250,0.4)",
         fill: "-1",
       },
       {
         label: "風力",
-        data: data.wind,
+        data: windData,
         borderColor: "#34d399",
         backgroundColor: "rgba(52,211,153,0.4)",
         fill: "-1",
       },
       {
         label: "太陽光",
-        data: data.solar,
+        data: solarData,
         borderColor: "#fbbf24",
         backgroundColor: "rgba(251,191,36,0.4)",
         fill: "-1",
