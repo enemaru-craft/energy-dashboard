@@ -227,8 +227,6 @@ export default function DashboardPage() {
       {/* ダッシュボードコンテンツ - 設定が完了している場合のみ表示 */}
       {isConfigComplete && (
         <div className={showModal ? "pointer-events-none blur-sm" : ""}>
-          <h1 className="text-3xl font-bold mb-6">Energy Dashboard</h1>
-
           {/* チーム名表示 */}
           <section className="flex w-full mb-6">
             <div className="flex-1 flex justify-center">
