@@ -358,7 +358,7 @@ export const PowerLineChart = ({ sessionId }: PowerLineChartProps) => {
         fill: true,
       },
       {
-        label: "水力",
+        label: "ボタン発電",
         data: hydroData,
         borderColor: "#60a5fa",
         backgroundColor: "rgba(96,165,250,0.4)",
