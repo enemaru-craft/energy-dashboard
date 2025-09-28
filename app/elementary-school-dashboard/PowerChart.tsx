@@ -61,6 +61,21 @@ export const PowerLineChart = ({ sessionId }: PowerLineChartProps) => {
         if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
         const json: PowerChartData = await res.json();
 
+        // APIから空のデータまたは無効なデータが返ってきた場合の処理
+        if (!json || !json.timeLabels || json.timeLabels.length === 0) {
+          // 空のデータ構造を設定
+          const emptyData: PowerChartData = {
+            timeLabels: [],
+            geothermal: [],
+            hydro: [],
+            wind: [],
+            solar: [],
+          };
+          setData(emptyData);
+          setLocalData(emptyData);
+          return;
+        }
+
         // 全体表示モードの場合は全データを使用
         if (isFullView) {
           setData(json);
@@ -272,80 +287,21 @@ export const PowerLineChart = ({ sessionId }: PowerLineChartProps) => {
   // 表示するデータを決定（停止中はlocalDataを使用、実行中はdataを使用）
   const displayData = isRunning ? data : localData;
 
-  // データがない場合の処理
-  if (!displayData) {
-    return (
-      <div className="w-full">
-        {/* コントロールボタン */}
-        <div className="flex gap-2 mb-4 justify-center">
-          <button
-            onClick={handleStart}
-            disabled={isRunning}
-            className={`px-4 py-2 rounded font-semibold ${
-              isRunning
-                ? "bg-gray-300 text-gray-500 cursor-not-allowed"
-                : "bg-green-500 text-white hover:bg-green-600"
-            }`}
-          >
-            スタート
-          </button>
-          <button
-            onClick={handleStop}
-            disabled={!isRunning}
-            className={`px-4 py-2 rounded font-semibold ${
-              !isRunning
-                ? "bg-gray-300 text-gray-500 cursor-not-allowed"
-                : "bg-red-500 text-white hover:bg-red-600"
-            }`}
-          >
-            ストップ
-          </button>
-          <button
-            onClick={handleClear}
-            className="px-4 py-2 rounded font-semibold bg-blue-500 text-white hover:bg-blue-600"
-          >
-            クリア
-          </button>
-          <button
-            onClick={handleFullView}
-            className="px-4 py-2 rounded font-semibold bg-purple-500 text-white hover:bg-purple-600"
-          >
-            全体表示
-          </button>
-        </div>
-
-        {/* データがない場合のメッセージ */}
-        <div className="flex items-center justify-center h-96 bg-gray-50 rounded border-2 border-dashed border-gray-300">
-          <p className="text-gray-500 text-lg">
-            スタートボタンを押してグラフの記録を開始してください
-          </p>
-        </div>
-      </div>
-    );
-  }
+  // データがない場合は空のデータ構造を作成
+  const safeDisplayData = displayData || {
+    timeLabels: [],
+    geothermal: [],
+    hydro: [],
+    wind: [],
+    solar: [],
+  };
 
   // 時間軸とデータの処理
-  let labels = displayData.timeLabels;
-  let geothermalData = displayData.geothermal;
-  let hydroData = displayData.hydro;
-  let windData = displayData.wind;
-  let solarData = displayData.solar;
-
-  // データが1つしかない場合、1分前の時間を追加
-  if (labels.length === 1) {
-    const currentTime = new Date(labels[0]);
-    const previousTime = new Date(currentTime.getTime() - 60000); // 1分前
-    const previousTimeString = previousTime.toISOString();
-
-    // 時間軸に1分前を追加（最初に配置）
-    labels = [previousTimeString, ...labels];
-
-    // 各発電量データに0を追加（最初に配置）
-    geothermalData = [0, ...geothermalData];
-    hydroData = [0, ...hydroData];
-    windData = [0, ...windData];
-    solarData = [0, ...solarData];
-  }
+  let labels = safeDisplayData.timeLabels;
+  let geothermalData = safeDisplayData.geothermal;
+  let hydroData = safeDisplayData.hydro;
+  let windData = safeDisplayData.wind;
+  let solarData = safeDisplayData.solar;
 
   const chartData = {
     labels,
