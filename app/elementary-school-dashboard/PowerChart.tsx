@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import { Line } from "react-chartjs-2";
 import {
   Chart as ChartJS,
@@ -46,8 +46,9 @@ export const PowerLineChart = ({ sessionId }: PowerLineChartProps) => {
   const [localData, setLocalData] = useState<PowerChartData | null>(null); // ローカルに保存されたデータ
   const [startTime, setStartTime] = useState<Date | null>(null); // 記録開始時刻
   const [isFullView, setIsFullView] = useState(true); // 全体表示モード（初期状態）
-  const [wasStopped, setWasStopped] = useState(false); // 停止されていたかどうか
+
   const [totalPower, setTotalPower] = useState<number>(0); // 総発電量
+  const [filterTime, setFilterTime] = useState(""); // 時間フィルター用の時間
 
   useEffect(() => {
     let intervalId: NodeJS.Timeout;
@@ -149,12 +150,10 @@ export const PowerLineChart = ({ sessionId }: PowerLineChartProps) => {
     setIsRunning(true);
     setLoading(true);
     setIsFullView(false); // スタート時は部分表示モードに
-    setWasStopped(false); // 停止フラグをリセット
   };
 
   const handleStop = () => {
     setIsRunning(false);
-    setWasStopped(true); // 停止フラグを設定
   };
 
   const handleClear = () => {
@@ -165,7 +164,6 @@ export const PowerLineChart = ({ sessionId }: PowerLineChartProps) => {
     setIsRunning(false); // クリア後は停止状態に
     setStartTime(null); // 開始時刻もリセット
     setIsFullView(false); // クリア後は部分表示モードに
-    setWasStopped(false); // 停止フラグもリセット
     setTotalPower(0); // 総発電量もリセット
   };
 
@@ -226,6 +224,26 @@ export const PowerLineChart = ({ sessionId }: PowerLineChartProps) => {
           <div className="px-4 py-2 rounded font-semibold bg-blue-100 border border-blue-300 text-blue-800">
             総発電量 {totalPower.toFixed(2)}kWh
           </div>
+        </div>
+
+        {/* 時間フィルター */}
+        <div className="flex items-center justify-center gap-3 mb-4">
+          <label className="text-sm font-medium text-gray-700">
+            表示開始時刻:
+          </label>
+          <input
+            type="time"
+            value={filterTime}
+            onChange={(e) => setFilterTime(e.target.value)}
+            className="px-3 py-1 border border-gray-300 rounded text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+            step="1"
+            placeholder="例: 14:30:00"
+          />
+          {filterTime && (
+            <span className="text-sm text-orange-600 font-medium">
+              {filterTime}以降のデータを表示
+            </span>
+          )}
         </div>
 
         {/* ローディング画面 */}
@@ -292,6 +310,26 @@ export const PowerLineChart = ({ sessionId }: PowerLineChartProps) => {
           </div>
         </div>
 
+        {/* 時間フィルター */}
+        <div className="flex items-center justify-center gap-3 mb-4">
+          <label className="text-sm font-medium text-gray-700">
+            表示開始時刻:
+          </label>
+          <input
+            type="time"
+            value={filterTime}
+            onChange={(e) => setFilterTime(e.target.value)}
+            className="px-3 py-1 border border-gray-300 rounded text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+            step="1"
+            placeholder="例: 14:30:00"
+          />
+          {filterTime && (
+            <span className="text-sm text-orange-600 font-medium">
+              {filterTime}以降のデータを表示
+            </span>
+          )}
+        </div>
+
         {/* エラー画面 */}
         <div className="flex items-center justify-center h-96 bg-red-50 rounded border-2 border-dashed border-red-300">
           <div className="text-center">
@@ -318,12 +356,46 @@ export const PowerLineChart = ({ sessionId }: PowerLineChartProps) => {
     solar: [],
   };
 
+  // 時間文字列を秒に変換する関数
+  const timeToSeconds = (timeStr: string): number => {
+    const [hours, minutes, seconds] = timeStr.split(":").map(Number);
+    return hours * 3600 + minutes * 60 + (seconds || 0);
+  };
+
+  // 時間フィルタリング関数
+  const filterDataByTime = (data: typeof safeDisplayData) => {
+    if (filterTime.trim() === "") {
+      return data;
+    }
+
+    const filterTimeInSeconds = timeToSeconds(filterTime);
+    const filteredIndices: number[] = [];
+
+    data.timeLabels.forEach((label, index) => {
+      const labelTimeInSeconds = timeToSeconds(label);
+      if (labelTimeInSeconds >= filterTimeInSeconds) {
+        filteredIndices.push(index);
+      }
+    });
+
+    return {
+      timeLabels: filteredIndices.map((i) => data.timeLabels[i]),
+      geothermal: filteredIndices.map((i) => data.geothermal[i]),
+      hydro: filteredIndices.map((i) => data.hydro[i]),
+      wind: filteredIndices.map((i) => data.wind[i]),
+      solar: filteredIndices.map((i) => data.solar[i]),
+    };
+  };
+
+  // フィルタリングされたデータを取得
+  const filteredData = filterDataByTime(safeDisplayData);
+
   // 時間軸とデータの処理
-  let labels = safeDisplayData.timeLabels;
-  let geothermalData = safeDisplayData.geothermal;
-  let hydroData = safeDisplayData.hydro;
-  let windData = safeDisplayData.wind;
-  let solarData = safeDisplayData.solar;
+  const labels = filteredData.timeLabels;
+  const geothermalData = filteredData.geothermal;
+  const hydroData = filteredData.hydro;
+  const windData = filteredData.wind;
+  const solarData = filteredData.solar;
 
   const chartData = {
     labels,
@@ -396,13 +468,13 @@ export const PowerLineChart = ({ sessionId }: PowerLineChartProps) => {
           display: true,
           text: "時間",
           font: {
-            size: 16,
+            size: 20,
             weight: "bold" as const,
           },
         },
         ticks: {
           font: {
-            size: 16,
+            size: 20,
           },
         },
       },
@@ -459,6 +531,26 @@ export const PowerLineChart = ({ sessionId }: PowerLineChartProps) => {
         <div className="px-4 py-2 rounded font-semibold bg-blue-100 border border-blue-300 text-blue-800">
           総発電量 {totalPower.toFixed(2)}kWh
         </div>
+      </div>
+
+      {/* 時間フィルター */}
+      <div className="flex items-center justify-center gap-3 mb-4">
+        <label className="text-sm font-medium text-gray-700">
+          表示開始時刻:
+        </label>
+        <input
+          type="time"
+          value={filterTime}
+          onChange={(e) => setFilterTime(e.target.value)}
+          className="px-3 py-1 border border-gray-300 rounded text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+          step="1"
+          placeholder="例: 14:30:00"
+        />
+        {filterTime && (
+          <span className="text-sm text-orange-600 font-medium">
+            {filterTime}以降のデータを表示
+          </span>
+        )}
       </div>
 
       {/* グラフ */}
