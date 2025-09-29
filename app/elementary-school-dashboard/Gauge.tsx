@@ -29,6 +29,13 @@ export function Gauge({
             { value: 180 },
             { value: 200 },
           ],
+          subArcs: [
+            { limit: 120 },
+            { limit: 140 },
+            { limit: 160 },
+            { limit: 180 },
+            { limit: 200 },
+          ],
         };
       case "wind": // 風力 100-420kW
         return {
@@ -40,6 +47,13 @@ export function Gauge({
             { value: 292 },
             { value: 356 },
             { value: 420 },
+          ],
+          subArcs: [
+            { limit: 164 },
+            { limit: 228 },
+            { limit: 292 },
+            { limit: 356 },
+            { limit: 420 },
           ],
         };
       case "solar": // 太陽光 300-500kW
@@ -53,6 +67,13 @@ export function Gauge({
             { value: 460 },
             { value: 500 },
           ],
+          subArcs: [
+            { value: 340 },
+            { limit: 380 },
+            { limit: 420 },
+            { limit: 460 },
+            { limit: 500 },
+          ],
         };
       case "hydro": // 手押し（ボタン発電） 0-100kW
         return {
@@ -65,12 +86,26 @@ export function Gauge({
             { value: 80 },
             { value: 100 },
           ],
+          subArcs: [
+            { limit: 20 },
+            { limit: 40 },
+            { limit: 60 },
+            { limit: 80 },
+            { limit: 100 },
+          ],
         };
       default:
         return {
           minValue: 0,
           maxValue: 100,
           ticks: [
+            { value: 20 },
+            { value: 40 },
+            { value: 60 },
+            { value: 80 },
+            { value: 100 },
+          ],
+          subArcs: [
             { value: 20 },
             { value: 40 },
             { value: 60 },
@@ -142,12 +177,7 @@ export function Gauge({
         gradient: true,
         // 3色で指定 → 最初と最後の2色は緑グラデーション、最後は赤で固定
         colorArray: ["#C2EE70", "#3CDF9C", "#0CF3B2", "#3ED6A4"],
-        subArcs: [
-          { limit: 30 }, // 0〜30% は 緑グラデーション
-          { limit: 60 }, // 0〜30% は 緑グラデーション
-          { limit: 90 }, // 30〜90% は 緑グラデーション
-          { limit: 100 }, // 90〜100% は 赤
-        ],
+        subArcs: gaugeConfig.subArcs,
         padding: 0,
         width: 0.2,
       }}
