@@ -224,26 +224,21 @@ export const PowerLineChart = ({ sessionId }: PowerLineChartProps) => {
           <div className="px-4 py-2 rounded font-semibold bg-blue-100 border border-blue-300 text-blue-800">
             総発電量 {totalPower.toFixed(2)}kWh
           </div>
-        </div>
 
-        {/* 時間フィルター */}
-        <div className="flex items-center justify-center gap-3 mb-4">
-          <label className="text-sm font-medium text-gray-700">
-            表示開始時刻:
-          </label>
-          <input
-            type="time"
-            value={filterTime}
-            onChange={(e) => setFilterTime(e.target.value)}
-            className="px-3 py-1 border border-gray-300 rounded text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-            step="1"
-            placeholder="例: 14:30:00"
-          />
-          {filterTime && (
-            <span className="text-sm text-orange-600 font-medium">
-              {filterTime}以降のデータを表示
-            </span>
-          )}
+          {/* 時間フィルター */}
+          <div className="flex items-center gap-2">
+            <label className="text-sm font-medium text-gray-700">
+              表示開始時刻:
+            </label>
+            <input
+              type="time"
+              value={filterTime}
+              onChange={(e) => setFilterTime(e.target.value)}
+              className="px-3 py-1 border border-gray-300 rounded text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+              step="1"
+              placeholder="例: 14:30:00"
+            />
+          </div>
         </div>
 
         {/* ローディング画面 */}
@@ -308,26 +303,21 @@ export const PowerLineChart = ({ sessionId }: PowerLineChartProps) => {
           <div className="px-4 py-2 rounded font-semibold bg-blue-100 border border-blue-300 text-blue-800">
             総発電量 {totalPower.toFixed(2)}kWh
           </div>
-        </div>
 
-        {/* 時間フィルター */}
-        <div className="flex items-center justify-center gap-3 mb-4">
-          <label className="text-sm font-medium text-gray-700">
-            表示開始時刻:
-          </label>
-          <input
-            type="time"
-            value={filterTime}
-            onChange={(e) => setFilterTime(e.target.value)}
-            className="px-3 py-1 border border-gray-300 rounded text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-            step="1"
-            placeholder="例: 14:30:00"
-          />
-          {filterTime && (
-            <span className="text-sm text-orange-600 font-medium">
-              {filterTime}以降のデータを表示
-            </span>
-          )}
+          {/* 時間フィルター */}
+          <div className="flex items-center gap-2">
+            <label className="text-sm font-medium text-gray-700">
+              表示開始時刻:
+            </label>
+            <input
+              type="time"
+              value={filterTime}
+              onChange={(e) => setFilterTime(e.target.value)}
+              className="px-3 py-1 border border-gray-300 rounded text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+              step="1"
+              placeholder="例: 14:30:00"
+            />
+          </div>
         </div>
 
         {/* エラー画面 */}
@@ -531,26 +521,21 @@ export const PowerLineChart = ({ sessionId }: PowerLineChartProps) => {
         <div className="px-4 py-2 rounded font-semibold bg-blue-100 border border-blue-300 text-blue-800">
           総発電量 {totalPower.toFixed(2)}kWh
         </div>
-      </div>
 
-      {/* 時間フィルター */}
-      <div className="flex items-center justify-center gap-3 mb-4">
-        <label className="text-sm font-medium text-gray-700">
-          表示開始時刻:
-        </label>
-        <input
-          type="time"
-          value={filterTime}
-          onChange={(e) => setFilterTime(e.target.value)}
-          className="px-3 py-1 border border-gray-300 rounded text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-          step="1"
-          placeholder="例: 14:30:00"
-        />
-        {filterTime && (
-          <span className="text-sm text-orange-600 font-medium">
-            {filterTime}以降のデータを表示
-          </span>
-        )}
+        {/* 時間フィルター */}
+        <div className="flex items-center gap-2">
+          <label className="text-sm font-medium text-gray-700">
+            表示開始時刻:
+          </label>
+          <input
+            type="time"
+            value={filterTime}
+            onChange={(e) => setFilterTime(e.target.value)}
+            className="px-3 py-1 border border-gray-300 rounded text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+            step="1"
+            placeholder="例: 14:30:00"
+          />
+        </div>
       </div>
 
       {/* グラフ */}
