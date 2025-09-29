@@ -366,17 +366,45 @@ export const PowerLineChart = ({ sessionId }: PowerLineChartProps) => {
       title: {
         display: true,
         text: "各モジュールにおける発電能力の推移",
+        font: {
+          size: 20,
+          weight: "bold" as const,
+        },
       },
     },
     scales: {
       y: {
         stacked: true,
         beginAtZero: true,
-        title: { display: true, text: "発電能力(kW)" },
+        title: {
+          display: true,
+          text: "発電能力(kW)",
+          font: {
+            size: 20,
+            weight: "bold" as const,
+          },
+        },
+        ticks: {
+          font: {
+            size: 20,
+          },
+        },
       },
       x: {
         stacked: true,
-        title: { display: true, text: "時間" },
+        title: {
+          display: true,
+          text: "時間",
+          font: {
+            size: 16,
+            weight: "bold" as const,
+          },
+        },
+        ticks: {
+          font: {
+            size: 16,
+          },
+        },
       },
     },
   };
