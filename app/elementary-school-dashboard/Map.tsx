@@ -127,8 +127,6 @@ export function PowerMap({
           markers.delete(deviceId);
         }
       });
-
-      console.log("Grand Total Power:", grandTotalPower);
     }
 
     // 初回実行

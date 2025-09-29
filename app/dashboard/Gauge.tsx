@@ -15,7 +15,6 @@ export function Gauge({
 }) {
   const [value, setValue] = useState(0);
   useEffect(() => {
-    console.log(process.env.NEXT_PUBLIC_BASE_URL);
     async function fetchData() {
       const res = await fetch(
         `${process.env.NEXT_PUBLIC_BASE_URL}/get-latest-power?device_type=${deviceType}&session_id=${sessionId}`
