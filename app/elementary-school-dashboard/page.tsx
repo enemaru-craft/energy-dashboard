@@ -251,7 +251,7 @@ export default function DashboardPage() {
                 </div>
                 <div className="flex flex-col items-center justify-center">
                   <Gauge deviceType="hydrogen" sessionId={sessionId1} />
-                  <span className="font-bold text-2xl">ボタン発電</span>
+                  <span className="font-bold text-2xl">人力発電</span>
                 </div>
                 <div className="flex flex-col items-center justify-center">
                   <Gauge deviceType="wind" sessionId={sessionId1} />
@@ -271,7 +271,7 @@ export default function DashboardPage() {
                 </div>
                 <div className="flex flex-col items-center justify-center">
                   <Gauge deviceType="hydrogen" sessionId={sessionId2} />
-                  <span className="font-bold text-2xl">ボタン発電</span>
+                  <span className="font-bold text-2xl">人力発電</span>
                 </div>
                 <div className="flex flex-col items-center justify-center">
                   <Gauge deviceType="wind" sessionId={sessionId2} />

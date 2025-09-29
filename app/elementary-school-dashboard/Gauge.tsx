@@ -15,20 +15,38 @@ export function Gauge({
 }) {
   const [value, setValue] = useState(0);
   useEffect(() => {
-    console.log(process.env.NEXT_PUBLIC_BASE_URL);
     async function fetchData() {
-      const res = await fetch(
-        `${process.env.NEXT_PUBLIC_BASE_URL}/get-latest-multiple-device-power?device_type=${deviceType}&session_id=${sessionId}`
-      );
-      const data = await res.json();
-      setValue(data.totalPower);
+      try {
+        const url = `${process.env.NEXT_PUBLIC_BASE_URL}/get-latest-multiple-device-power?device_type=${deviceType}&session_id=${sessionId}`;
+
+        const res = await fetch(url);
+
+        if (!res.ok) {
+          console.error(
+            `[${deviceType}] API error:`,
+            res.status,
+            res.statusText
+          );
+          return;
+        }
+
+        const data = await res.json();
+
+        if (data && typeof data.totalPower === "number") {
+          setValue(data.totalPower);
+        } else {
+          console.warn(`[${deviceType}] Invalid totalPower in response:`, data);
+        }
+      } catch (error) {
+        console.error(`[${deviceType}] Fetch error:`, error);
+      }
     }
     fetchData();
 
-    // 10秒ごとに更新
+    // 3秒ごとに更新
     const timer = setInterval(fetchData, 3000);
     return () => clearInterval(timer);
-  }, []);
+  }, [deviceType, sessionId]);
 
   return (
     <GaugeComponent
