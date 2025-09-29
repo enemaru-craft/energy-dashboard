@@ -14,6 +14,75 @@ export function Gauge({
   sessionId: string;
 }) {
   const [value, setValue] = useState(0);
+
+  // 発電タイプに応じたゲージ設定を取得
+  const getGaugeConfig = (deviceType: string) => {
+    switch (deviceType) {
+      case "geothermal": // 地熱 100～200kW
+        return {
+          minValue: 100,
+          maxValue: 200,
+          ticks: [
+            { value: 120 },
+            { value: 140 },
+            { value: 160 },
+            { value: 180 },
+            { value: 200 },
+          ],
+        };
+      case "wind": // 風力 100-420kW
+        return {
+          minValue: 100,
+          maxValue: 420,
+          ticks: [
+            { value: 164 },
+            { value: 228 },
+            { value: 292 },
+            { value: 356 },
+            { value: 420 },
+          ],
+        };
+      case "solar": // 太陽光 300-500kW
+        return {
+          minValue: 300,
+          maxValue: 500,
+          ticks: [
+            { value: 340 },
+            { value: 380 },
+            { value: 420 },
+            { value: 460 },
+            { value: 500 },
+          ],
+        };
+      case "hydro": // 手押し（ボタン発電） 0-100kW
+        return {
+          minValue: 0,
+          maxValue: 100,
+          ticks: [
+            { value: 20 },
+            { value: 40 },
+            { value: 60 },
+            { value: 80 },
+            { value: 100 },
+          ],
+        };
+      default:
+        return {
+          minValue: 0,
+          maxValue: 100,
+          ticks: [
+            { value: 20 },
+            { value: 40 },
+            { value: 60 },
+            { value: 80 },
+            { value: 100 },
+          ],
+        };
+    }
+  };
+
+  const gaugeConfig = getGaugeConfig(deviceType);
+
   useEffect(() => {
     async function fetchData() {
       try {
@@ -52,6 +121,8 @@ export function Gauge({
     <GaugeComponent
       value={value}
       type="radial"
+      minValue={gaugeConfig.minValue}
+      maxValue={gaugeConfig.maxValue}
       labels={{
         valueLabel: {
           formatTextValue: (value) => `${value}kW`,
@@ -64,13 +135,7 @@ export function Gauge({
         },
         tickLabels: {
           type: "inner",
-          ticks: [
-            { value: 20 },
-            { value: 40 },
-            { value: 60 },
-            { value: 80 },
-            { value: 100 },
-          ],
+          ticks: gaugeConfig.ticks,
         },
       }}
       arc={{
