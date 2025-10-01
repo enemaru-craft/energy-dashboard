@@ -142,14 +142,11 @@ export default function DashboardPage() {
         </div>
       )}
 
-      {/* 背景ぼかし & モーダル */}
+      {/* モーダル */}
       {showModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center">
-          {/* 背景ブラー + 半透明 */}
-          <div className="absolute inset-0 bg-black/30 backdrop-blur-sm"></div>
-
           {/* モーダル本体 */}
-          <div className="relative bg-white/90 rounded-2xl shadow-2xl p-8 w-fit max-w-4xl z-10">
+          <div className="relative bg-white rounded-2xl shadow-2xl p-8 w-fit max-w-4xl z-10">
             <h1 className="text-2xl font-bold mb-6 text-center">
               チーム情報を入力してください
             </h1>
