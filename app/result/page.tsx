@@ -185,11 +185,6 @@ export default function ResultPage() {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
           {/* チーム1詳細 */}
           <div>
-            <div>
-              <section className="flex-1 border rounded-4xl bg-white shadow-2xl p-6 mb-6">
-                <PowerLineChart sessionId={"72"} />
-              </section>
-            </div>
             <div className="bg-white rounded-3xl shadow-2xl p-8 border-4 border-gray-200">
               <div className="text-center mb-6">
                 <h2 className="text-3xl font-bold text-blue-600 mb-2 flex items-center justify-center">
@@ -412,15 +407,16 @@ export default function ResultPage() {
                 </div>
               </div>
             </div>
+
+            <div>
+              <section className="flex-1 border rounded-4xl bg-white shadow-2xl p-6 mt-6">
+                <PowerLineChart sessionId={"72"} />
+              </section>
+            </div>
           </div>
 
           {/* チーム2詳細 */}
           <div>
-            <div>
-              <section className="flex-1 border rounded-4xl bg-white shadow-2xl p-6 mb-6">
-                <PowerLineChart sessionId={"73"} />
-              </section>
-            </div>
             <div className="bg-white rounded-3xl shadow-2xl p-8 border-4 border-gray-200">
               <div className="text-center mb-6">
                 <h2 className="text-3xl font-bold text-red-600 mb-2 flex items-center justify-center">
@@ -638,6 +634,11 @@ export default function ResultPage() {
                   </p>
                 </div>
               </div>
+            </div>
+            <div>
+              <section className="flex-1 border rounded-4xl bg-white shadow-2xl p-6 mt-6">
+                <PowerLineChart sessionId={"73"} />
+              </section>
             </div>
           </div>
         </div>
