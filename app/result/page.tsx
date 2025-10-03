@@ -225,7 +225,7 @@ export default function ResultPage() {
               <div className="mb-8 p-6 bg-gradient-to-r from-yellow-100 to-orange-100 rounded-2xl border-2 border-yellow-300">
                 <div className="flex items-center mb-4">
                   <span className="text-2xl font-bold text-orange-800">
-                    祭壇瞬間発電量
+                    最大瞬間発電量
                   </span>
                 </div>
 
