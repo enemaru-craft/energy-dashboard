@@ -239,7 +239,7 @@ export default function ResultPage() {
                 </div>
 
                 <div className="text-center mb-4">
-                  <div className="text-5xl font-bold text-orange-700 mb-2 animate-bounce">
+                  <div className="text-5xl font-bold text-orange-700 mb-2">
                     {resultData.team1.peakPower.toFixed(1)} kW
                   </div>
                 </div>
@@ -383,7 +383,7 @@ export default function ResultPage() {
                 </div>
 
                 <div className="text-center mb-4">
-                  <div className="text-5xl font-bold text-orange-700 mb-2 animate-bounce">
+                  <div className="text-5xl font-bold text-orange-700 mb-2">
                     {resultData.team2.peakPower.toFixed(1)} kW
                   </div>
                 </div>
