@@ -218,19 +218,10 @@ export default function ResultPage() {
                     }}
                   ></div>
                 </div>
-
-                <div className="bg-white p-4 rounded-xl shadow-md border-2 border-blue-200">
-                  <p className="text-2xl text-blue-800 font-bold text-center mb-2">
-                    🏫 学校{" "}
-                    <span className="text-3xl text-green-600">
-                      {team1Schools}
-                    </span>{" "}
-                    校分を動かせる！
-                  </p>
-                </div>
               </div>
 
               {/* 最大瞬間発電量（ピークパワー） */}
+
               <div className="mb-8 p-6 bg-gradient-to-r from-yellow-100 to-orange-100 rounded-2xl border-2 border-yellow-300">
                 <div className="flex items-center mb-4">
                   <span className="text-2xl font-bold text-orange-800">
@@ -361,16 +352,6 @@ export default function ResultPage() {
                       )}%`,
                     }}
                   ></div>
-                </div>
-
-                <div className="bg-white p-4 rounded-xl shadow-md border-2 border-red-200">
-                  <p className="text-2xl text-red-800 font-bold text-center mb-2">
-                    🏫 学校{" "}
-                    <span className="text-3xl text-green-600">
-                      {team2Schools}
-                    </span>{" "}
-                    校分を動かせる！
-                  </p>
                 </div>
               </div>
 
