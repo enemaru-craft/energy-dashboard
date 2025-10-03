@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { PowerLineChart } from "../dashboard/PowerChart";
 import { Line } from "react-chartjs-2";
 import {
   Chart as ChartJS,
@@ -160,48 +161,6 @@ export default function ResultPage() {
   const team2Happiness = calculateHappiness(resultData.team2.complaints);
   const team2Environment = getEnvironmentEmoji(resultData.team2.co2Reduction);
 
-  // チーム1のグラフデータ
-  const team1ChartData = {
-    labels: resultData.team1.timeSeriesData.labels,
-    datasets: [
-      {
-        label: `${resultData.team1.teamName}`,
-        data: resultData.team1.timeSeriesData.powerData,
-        borderColor: "#3B82F6",
-        backgroundColor: "rgba(59, 130, 246, 0.1)",
-        fill: true,
-        tension: 0.4,
-        pointBackgroundColor: resultData.team1.timeSeriesData.powerData.map(
-          (val) => (val === resultData.team1.peakPower ? "#FFD700" : "#3B82F6")
-        ),
-        pointRadius: resultData.team1.timeSeriesData.powerData.map((val) =>
-          val === resultData.team1.peakPower ? 8 : 3
-        ),
-      },
-    ],
-  };
-
-  // チーム2のグラフデータ
-  const team2ChartData = {
-    labels: resultData.team2.timeSeriesData.labels,
-    datasets: [
-      {
-        label: `${resultData.team2.teamName}`,
-        data: resultData.team2.timeSeriesData.powerData,
-        borderColor: "#EF4444",
-        backgroundColor: "rgba(239, 68, 68, 0.1)",
-        fill: true,
-        tension: 0.4,
-        pointBackgroundColor: resultData.team2.timeSeriesData.powerData.map(
-          (val) => (val === resultData.team2.peakPower ? "#FFD700" : "#EF4444")
-        ),
-        pointRadius: resultData.team2.timeSeriesData.powerData.map((val) =>
-          val === resultData.team2.peakPower ? 8 : 3
-        ),
-      },
-    ],
-  };
-
   const chartOptions = {
     responsive: true,
     plugins: {
@@ -222,56 +181,16 @@ export default function ResultPage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-[rgb(194,238,112)] to-[rgb(60,223,156)] p-6">
-      <div className="max-w-7xl mx-auto">
+      <div className="mx-auto">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
           {/* チーム1のグラフ */}
-          <div className="bg-white rounded-2xl shadow-2xl p-6 border-4 border-gray-200">
-            <h2 className="text-2xl font-bold text-blue-600 mb-4 text-center flex items-center justify-center">
-              <span className="text-3xl mr-2">⚡</span>
-              {resultData.team1.teamName} の発電グラフ
-            </h2>
-            <div className="h-64 bg-blue-50 rounded-lg p-2">
-              <Line
-                data={team1ChartData}
-                options={{ ...chartOptions, maintainAspectRatio: false }}
-              />
-            </div>
-            <div className="mt-4 text-center bg-blue-100 rounded-lg p-4">
-              <div className="text-xl font-bold text-blue-700 mb-2">
-                🌟 いちばんがんばった時刻: {resultData.team1.peakTime}
-              </div>
-              <div className="text-lg text-blue-600">
-                ⚡ その時の発電量: {resultData.team1.peakPower}kW
-              </div>
-              <div className="text-lg text-blue-600">
-                📊 1日の合計: {resultData.team1.totalPower.toFixed(1)}kWh
-              </div>
-            </div>
-          </div>
-
-          {/* チーム2のグラフ */}
-          <div className="bg-white rounded-2xl shadow-2xl p-6 border-4 border-gray-200">
-            <h2 className="text-2xl font-bold text-red-600 mb-4 text-center flex items-center justify-center">
-              <span className="text-3xl mr-2">⚡</span>
-              {resultData.team2.teamName} の発電グラフ
-            </h2>
-            <div className="h-64 bg-red-50 rounded-lg p-2">
-              <Line
-                data={team2ChartData}
-                options={{ ...chartOptions, maintainAspectRatio: false }}
-              />
-            </div>
-            <div className="mt-4 text-center bg-red-100 rounded-lg p-4">
-              <div className="text-xl font-bold text-red-700 mb-2">
-                🌟 いちばんがんばった時刻: {resultData.team2.peakTime}
-              </div>
-              <div className="text-lg text-red-600">
-                ⚡ その時の発電量: {resultData.team2.peakPower}kW
-              </div>
-              <div className="text-lg text-red-600">
-                📊 1日の合計: {resultData.team2.totalPower.toFixed(1)}kWh
-              </div>
-            </div>
+          <div className="flex">
+            <section className="flex-1 border rounded-4xl bg-white shadow-2xl p-6 mb-6">
+              <PowerLineChart sessionId={"72"} />
+            </section>
+            <section className="flex-1 border rounded-4xl bg-white shadow-2xl p-6 mb-6">
+              <PowerLineChart sessionId={"73"} />
+            </section>
           </div>
         </div>
 
