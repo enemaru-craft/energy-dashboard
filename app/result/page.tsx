@@ -223,20 +223,6 @@ export default function ResultPage() {
   return (
     <div className="min-h-screen bg-gradient-to-b from-sky-100 to-green-100 p-6">
       <div className="max-w-7xl mx-auto">
-        {/* ヘッダー */}
-        <div className="text-center mb-8">
-          <h1 className="text-5xl font-bold text-gray-800 mb-4">
-            🎉 発電チャレンジ結果発表 🎉
-          </h1>
-          <p className="text-2xl text-gray-700 mb-2">
-            みんな、よくがんばりました！
-          </p>
-          <p className="text-lg text-gray-600">
-            どちらのチームもすばらしい結果です
-          </p>
-        </div>
-
-        {/* 2つのグラフを並べて表示 */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
           {/* チーム1のグラフ */}
           <div className="bg-white rounded-2xl shadow-2xl p-6 border-4 border-blue-400">
@@ -723,22 +709,6 @@ export default function ResultPage() {
             </div>
           </div>
         </div>
-
-        {/* 締めくくりメッセージ */}
-        <div className="text-center bg-gradient-to-r from-yellow-200 via-green-200 to-blue-200 p-8 rounded-3xl shadow-2xl border-4 border-yellow-300 mb-8">
-          <h3 className="text-4xl font-bold text-gray-800 mb-4">
-            🌟 みんな、お疲れさまでした！ 🌟
-          </h3>
-          <p className="text-2xl text-gray-700 mb-2">
-            どちらのチームも地球にやさしい電気をたくさん作ることができました！
-          </p>
-          <p className="text-xl text-gray-600">
-            これからも環境のことを考えながら、エネルギーについて学び続けましょう
-            🌍💚
-          </p>
-        </div>
-
-        {/* 戻るボタン */}
         <div className="text-center">
           <button
             onClick={() => window.history.back()}
