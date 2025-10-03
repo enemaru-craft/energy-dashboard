@@ -225,7 +225,7 @@ export default function ResultPage() {
       <div className="max-w-7xl mx-auto">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
           {/* チーム1のグラフ */}
-          <div className="bg-white rounded-2xl shadow-2xl p-6 border-4 border-blue-400">
+          <div className="bg-white rounded-2xl shadow-2xl p-6 border-4 border-gray-200">
             <h2 className="text-2xl font-bold text-blue-600 mb-4 text-center flex items-center justify-center">
               <span className="text-3xl mr-2">⚡</span>
               {resultData.team1.teamName} の発電グラフ
@@ -250,7 +250,7 @@ export default function ResultPage() {
           </div>
 
           {/* チーム2のグラフ */}
-          <div className="bg-white rounded-2xl shadow-2xl p-6 border-4 border-red-400">
+          <div className="bg-white rounded-2xl shadow-2xl p-6 border-4 border-gray-200">
             <h2 className="text-2xl font-bold text-red-600 mb-4 text-center flex items-center justify-center">
               <span className="text-3xl mr-2">⚡</span>
               {resultData.team2.teamName} の発電グラフ
@@ -278,7 +278,7 @@ export default function ResultPage() {
         {/* 詳しい結果（チーム対戦風） */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
           {/* チーム1詳細 */}
-          <div className="bg-white rounded-3xl shadow-2xl p-8 border-4 border-blue-400">
+          <div className="bg-white rounded-3xl shadow-2xl p-8 border-4 border-gray-200">
             <div className="text-center mb-6">
               <h2 className="text-3xl font-bold text-blue-600 mb-2 flex items-center justify-center">
                 <span className="text-4xl mr-2">🛡️</span>
@@ -496,7 +496,7 @@ export default function ResultPage() {
           </div>
 
           {/* チーム2詳細 */}
-          <div className="bg-white rounded-3xl shadow-2xl p-8 border-4 border-red-400">
+          <div className="bg-white rounded-3xl shadow-2xl p-8 border-4 border-gray-200">
             <div className="text-center mb-6">
               <h2 className="text-3xl font-bold text-red-600 mb-2 flex items-center justify-center">
                 <span className="text-4xl mr-2">🛡️</span>
