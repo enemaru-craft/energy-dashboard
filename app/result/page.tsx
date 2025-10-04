@@ -63,6 +63,23 @@ function ComplaintRow({
   );
 }
 
+export interface GameResult {
+  totalPowerGeneration: number;
+  hydrogenMaximumInstantaneousPowerGeneration: number;
+  windMaximumInstantaneousPowerGeneration: number;
+  solarMaximumInstantaneousPowerGeneration: number;
+  geothermalMaximumInstantaneousPowerGeneration: number;
+  co2ReductionAmount: number;
+  happiness: {
+    environmentProblemScore: number;
+    environmentProblemNumber: number;
+    powerStabilityScore: number;
+    powerStabilityNumber: number;
+    infrastructureComfortScore: number;
+    infrastructureComfortNumber: number;
+  };
+}
+
 function TeamResultCard({
   team,
   sessionId,
@@ -72,7 +89,26 @@ function TeamResultCard({
   sessionId: string;
   color: "blue" | "red";
 }) {
-  const happiness = calculateHappiness(team.complaints);
+  const [responseData, setResponseData] = useState<GameResult | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  useEffect(() => {
+    const fetchResult = async () => {
+      try {
+        const res = await fetch(
+          `${process.env.NEXT_PUBLIC_BASE_URL}/get-game-result?session_id=${sessionId}`
+        );
+        if (!res.ok) throw new Error(`API error: ${res.status}`);
+
+        const data: GameResult = await res.json();
+        setResponseData(data);
+      } catch (err: any) {
+        setError(err.message);
+        console.error("Error fetching game result:", err);
+      }
+    };
+
+    fetchResult();
+  }, [sessionId]);
 
   return (
     <div>
@@ -105,24 +141,12 @@ function TeamResultCard({
           </span>
           <div className="text-center mb-4">
             <div
-              className={`text-5xl font-bold mb-2 animate-pulse ${
+              className={`text-5xl font-bold mb-2  ${
                 color === "blue" ? "text-blue-700" : "text-red-700"
               }`}
             >
-              {team.totalPower.toFixed(1)} kWh
+              {responseData?.totalPowerGeneration?.toFixed(3)}kWh
             </div>
-          </div>
-          <div className="w-full bg-gray-300 rounded-full h-6 mb-4 shadow-inner">
-            <div
-              className={`h-6 rounded-full transition-all duration-2000 shadow-lg ${
-                color === "blue"
-                  ? "bg-gradient-to-r from-blue-500 via-cyan-500 to-green-500"
-                  : "bg-gradient-to-r from-red-500 via-pink-500 to-orange-500"
-              }`}
-              style={{
-                width: `${Math.min(100, (team.totalPower / 150) * 100)}%`,
-              }}
-            ></div>
           </div>
         </div>
 
@@ -154,9 +178,7 @@ function TeamResultCard({
             街の暮らしやすさ
           </span>
           <div className="text-center">
-            <div className="text-5xl font-bold text-purple-700 mb-3">
-              {happiness} 点
-            </div>
+            <div className="text-5xl font-bold text-purple-700 mb-3"></div>
           </div>
 
           <div className="space-y-3">
@@ -194,11 +216,14 @@ export default function ResultPage() {
   const [resultData, setResultData] = useState<ResultData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-
-  const sessionId1 = localStorage.getItem("sessionId1") || "default_session";
-  const sessionId2 = localStorage.getItem("sessionId2") || "default_session";
+  const [sessionId1, setSessionId1] = useState<string>("default_session");
+  const [sessionId2, setSessionId2] = useState<string>("default_session");
 
   useEffect(() => {
+    const sessionId1 = localStorage.getItem("sessionId1") || "default_session";
+    const sessionId2 = localStorage.getItem("sessionId2") || "default_session";
+    setSessionId1(sessionId1);
+    setSessionId2(sessionId2);
     const fetchResultData = async () => {
       try {
         await new Promise((resolve) => setTimeout(resolve, 1000));
@@ -262,7 +287,7 @@ export default function ResultPage() {
       </div>
       <div className="text-center">
         <button
-          onClick={() => window.history.back()}
+          onClick={() => (window.location.href = "/dashboard")}
           className="bg-gradient-to-r bg-white text-black font-bold py-4 px-10 rounded-full shadow-2xl transform hover:scale-110  duration-300 text-xl"
         >
           ダッシュボードに戻る
