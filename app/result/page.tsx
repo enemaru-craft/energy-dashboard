@@ -223,11 +223,11 @@ function TeamResultCard({
   gameResultData?: GameResult;
   animationStep?: number;
 }) {
-  // 村民の声をランダム順序でソート
-  const randomizedComments = useMemo(() => {
-    if (!gameResultData?.villagersTexts) return [];
+  // 村民の声を感情別に分けて選択
+  const selectedComments = useMemo(() => {
+    if (!gameResultData?.villagersTexts) return { left: null, right: null };
 
-    const comments = [];
+    const comments: CommentWithSentiment[] = [];
     if (gameResultData.villagersTexts.facility_firestation) {
       comments.push(gameResultData.villagersTexts.facility_firestation);
     }
@@ -247,13 +247,61 @@ function TeamResultCard({
       comments.push(gameResultData.villagersTexts.train);
     }
 
-    // Fisher-Yatesアルゴリズムでシャッフル
-    for (let i = comments.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [comments[i], comments[j]] = [comments[j], comments[i]];
+    // コメントを感情別に分類
+    const positiveComments = comments.filter(
+      (comment) => comment.sentiment === "positive"
+    );
+    const negativeComments = comments.filter(
+      (comment) => comment.sentiment === "negative"
+    );
+
+    let leftComment = null;
+    let rightComment = null;
+
+    // positiveコメントがある場合は左に表示
+    if (positiveComments.length > 0) {
+      leftComment =
+        positiveComments[Math.floor(Math.random() * positiveComments.length)];
     }
 
-    return comments;
+    // negativeコメントがある場合は右に表示
+    if (negativeComments.length > 0) {
+      rightComment =
+        negativeComments[Math.floor(Math.random() * negativeComments.length)];
+    }
+
+    // どちらかが0の場合の処理
+    if (positiveComments.length === 0 && negativeComments.length > 0) {
+      // negativeのみの場合、両方にnegativeを表示
+      leftComment =
+        negativeComments[Math.floor(Math.random() * negativeComments.length)];
+      if (negativeComments.length > 1) {
+        let rightIndex;
+        do {
+          rightIndex = Math.floor(Math.random() * negativeComments.length);
+        } while (
+          rightIndex === negativeComments.indexOf(leftComment) &&
+          negativeComments.length > 1
+        );
+        rightComment = negativeComments[rightIndex];
+      }
+    } else if (negativeComments.length === 0 && positiveComments.length > 0) {
+      // positiveのみの場合、両方にpositiveを表示
+      leftComment =
+        positiveComments[Math.floor(Math.random() * positiveComments.length)];
+      if (positiveComments.length > 1) {
+        let rightIndex;
+        do {
+          rightIndex = Math.floor(Math.random() * positiveComments.length);
+        } while (
+          rightIndex === positiveComments.indexOf(leftComment) &&
+          positiveComments.length > 1
+        );
+        rightComment = positiveComments[rightIndex];
+      }
+    }
+
+    return { left: leftComment, right: rightComment };
   }, [gameResultData?.villagersTexts]);
 
   return (
@@ -434,18 +482,28 @@ function TeamResultCard({
           </div>
 
           {/* 村人の声 */}
-          {gameResultData?.villagersTexts && (
-            <div>
-              <h4 className="text-lg font-bold text-purple-800 mb-3">
-                村人の声
-              </h4>
-              <div className="grid grid-cols-2 gap-3">
-                {randomizedComments.map((message, index) => (
-                  <VillagerText key={`comment-${index}`} message={message} />
-                ))}
+          {gameResultData?.villagersTexts &&
+            (selectedComments.left || selectedComments.right) && (
+              <div>
+                <h4 className="text-lg font-bold text-purple-800 mb-3">
+                  その他の声
+                </h4>
+                <div className="grid grid-cols-2 gap-3">
+                  {selectedComments.left && (
+                    <VillagerText
+                      key="positive-comment"
+                      message={selectedComments.left}
+                    />
+                  )}
+                  {selectedComments.right && (
+                    <VillagerText
+                      key="negative-comment"
+                      message={selectedComments.right}
+                    />
+                  )}
+                </div>
               </div>
-            </div>
-          )}
+            )}
         </div>
       </div>
 
