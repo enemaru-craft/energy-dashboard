@@ -252,9 +252,9 @@ export default function ResultPage() {
       <div className="text-center">
         <button
           onClick={() => window.history.back()}
-          className="bg-gradient-to-r from-purple-500 via-pink-500 to-blue-500 hover:from-purple-600 hover:via-pink-600 hover:to-blue-600 text-white font-bold py-4 px-10 rounded-full shadow-2xl transform hover:scale-110 transition-all duration-300 text-xl"
+          className="bg-gradient-to-r bg-white text-black font-bold py-4 px-10 rounded-full shadow-2xl transform hover:scale-110  duration-300 text-xl"
         >
-          🏠 ダッシュボードに戻る
+          ダッシュボードに戻る
         </button>
       </div>
     </div>
