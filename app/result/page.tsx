@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { ResultPowerLineChart } from "./ResultPowerChart";
 
 interface ResultData {
@@ -32,21 +32,126 @@ interface GameResult {
   };
 }
 
-interface VillagerTextProps {
-  facilityName: string;
-  message: string;
-}
-
-const VillagerText = ({ facilityName, message }: VillagerTextProps) => (
+const VillagerText = ({ message }: { message: string }) => (
   <div className="bg-purple-50 border-2 border-purple-200 rounded-xl p-4">
-    <div className="flex items-center mb-2">
-      <div className="font-bold text-lg text-purple-700">{facilityName}</div>
-    </div>
     <div className="text-xl leading-relaxed text-purple-600 bg-white bg-opacity-50 rounded-lg p-3">
       {message}
     </div>
   </div>
 );
+
+// canvas-confetti用の型定義
+declare global {
+  interface Window {
+    confetti: (options?: {
+      particleCount?: number;
+      angle?: number;
+      spread?: number;
+      startVelocity?: number;
+      colors?: string[];
+      origin?: { x?: number; y?: number };
+    }) => void;
+  }
+}
+
+// クラッカーアニメーションコンポーネント
+const CrackerAnimation = ({ show }: { show: boolean }) => {
+  const [isScriptLoaded, setIsScriptLoaded] = useState(false);
+
+  // canvas-confettiスクリプトを動的に読み込む
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      if (!document.querySelector('script[src*="canvas-confetti"]')) {
+        const script = document.createElement("script");
+        script.src =
+          "https://cdn.jsdelivr.net/npm/canvas-confetti@1.3.2/dist/confetti.browser.min.js";
+        script.onload = () => {
+          setIsScriptLoaded(true);
+        };
+        document.head.appendChild(script);
+      } else {
+        setIsScriptLoaded(true);
+      }
+    }
+  }, []);
+
+  // confetti演出の実行
+  useEffect(() => {
+    if (!show || !isScriptLoaded || !window.confetti) return;
+
+    const runConfetti = () => {
+      // 中央からの基本的なconfetti
+      window.confetti({
+        particleCount: 100,
+        spread: 70,
+        origin: { y: 0.6 },
+      });
+
+      // 左側からのconfetti
+      setTimeout(() => {
+        window.confetti({
+          particleCount: 50,
+          angle: 60,
+          spread: 55,
+          origin: { x: 0, y: 0.6 },
+        });
+      }, 200);
+
+      // 右側からのconfetti
+      setTimeout(() => {
+        window.confetti({
+          particleCount: 50,
+          angle: 120,
+          spread: 55,
+          origin: { x: 1, y: 0.6 },
+        });
+      }, 400);
+
+      // 上からの金色のconfetti
+      setTimeout(() => {
+        window.confetti({
+          particleCount: 30,
+          spread: 360,
+          startVelocity: 30,
+          colors: ["#FFD700", "#FFA500", "#FF6347"],
+          origin: { x: 0.5, y: 0.3 },
+        });
+      }, 600);
+
+      // 連続する小さなconfetti爆発
+      const duration = 3000;
+      const end = Date.now() + duration;
+
+      const frame = () => {
+        window.confetti({
+          particleCount: 2,
+          angle: 60,
+          spread: 55,
+          origin: { x: 0 },
+        });
+        window.confetti({
+          particleCount: 2,
+          angle: 120,
+          spread: 55,
+          origin: { x: 1 },
+        });
+
+        if (Date.now() < end) {
+          requestAnimationFrame(frame);
+        }
+      };
+
+      setTimeout(() => {
+        frame();
+      }, 800);
+    };
+
+    runConfetti();
+  }, [show, isScriptLoaded]);
+
+  // canvas-confettiを使うので、DOM要素は不要
+  return null;
+};
 
 function ComplaintRow({
   icon,
@@ -102,6 +207,39 @@ function TeamResultCard({
   gameResultData?: GameResult;
   animationStep?: number;
 }) {
+  // 村民の声をランダム順序でソート
+  const randomizedComments = useMemo(() => {
+    if (!gameResultData?.villagersTexts) return [];
+
+    const comments = [];
+    if (gameResultData.villagersTexts.facility_firestation) {
+      comments.push(gameResultData.villagersTexts.facility_firestation);
+    }
+    if (gameResultData.villagersTexts.facility_shoppingmall) {
+      comments.push(gameResultData.villagersTexts.facility_shoppingmall);
+    }
+    if (gameResultData.villagersTexts.factory) {
+      comments.push(gameResultData.villagersTexts.factory);
+    }
+    if (gameResultData.villagersTexts.house) {
+      comments.push(gameResultData.villagersTexts.house);
+    }
+    if (gameResultData.villagersTexts.light) {
+      comments.push(gameResultData.villagersTexts.light);
+    }
+    if (gameResultData.villagersTexts.train) {
+      comments.push(gameResultData.villagersTexts.train);
+    }
+
+    // Fisher-Yatesアルゴリズムでシャッフル
+    for (let i = comments.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [comments[i], comments[j]] = [comments[j], comments[i]];
+    }
+
+    return comments;
+  }, [gameResultData?.villagersTexts]);
+
   return (
     <div>
       <div className="bg-white rounded-3xl shadow-2xl p-8 border-4 border-gray-200">
@@ -279,44 +417,9 @@ function TeamResultCard({
                 村人の声
               </h4>
               <div className="grid grid-cols-2 gap-3">
-                {gameResultData.villagersTexts.facility_firestation && (
-                  <VillagerText
-                    facilityName="消防署"
-                    message={gameResultData.villagersTexts.facility_firestation}
-                  />
-                )}
-                {gameResultData.villagersTexts.facility_shoppingmall && (
-                  <VillagerText
-                    facilityName="ショッピングモール"
-                    message={
-                      gameResultData.villagersTexts.facility_shoppingmall
-                    }
-                  />
-                )}
-                {gameResultData.villagersTexts.factory && (
-                  <VillagerText
-                    facilityName="工場"
-                    message={gameResultData.villagersTexts.factory}
-                  />
-                )}
-                {gameResultData.villagersTexts.house && (
-                  <VillagerText
-                    facilityName="住宅"
-                    message={gameResultData.villagersTexts.house}
-                  />
-                )}
-                {gameResultData.villagersTexts.light && (
-                  <VillagerText
-                    facilityName="街灯"
-                    message={gameResultData.villagersTexts.light}
-                  />
-                )}
-                {gameResultData.villagersTexts.train && (
-                  <VillagerText
-                    facilityName="電車"
-                    message={gameResultData.villagersTexts.train}
-                  />
-                )}
+                {randomizedComments.map((message, index) => (
+                  <VillagerText key={`comment-${index}`} message={message} />
+                ))}
               </div>
             </div>
           )}
@@ -346,6 +449,7 @@ export default function ResultPage() {
   const [teamName1, setTeamName1] = useState<string>("Team 1");
   const [teamName2, setTeamName2] = useState<string>("Team 2");
   const [animationStep, setAnimationStep] = useState(0);
+  const [showCracker, setShowCracker] = useState(false);
 
   useEffect(() => {
     const sessionId1 = localStorage.getItem("sessionId1") || "default_session";
@@ -391,6 +495,15 @@ export default function ResultPage() {
           setAnimationStep(step);
         }, index * 500); // 0.5秒間隔で順番に表示
       });
+
+      // 全てのアニメーション完了後にクラッカーを表示
+      setTimeout(() => {
+        setShowCracker(true);
+        // 5秒後にクラッカーを非表示
+        setTimeout(() => {
+          setShowCracker(false);
+        }, 5000);
+      }, steps.length * 500 + 1000); // 全アニメーション完了から1秒後
     }
   }, [loading, resultData]);
 
@@ -439,6 +552,9 @@ export default function ResultPage() {
           ダッシュボードに戻る
         </button>
       </div>
+
+      {/* クラッカーアニメーション */}
+      <CrackerAnimation show={showCracker} />
     </div>
   );
 }
