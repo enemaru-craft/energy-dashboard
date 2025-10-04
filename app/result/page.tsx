@@ -8,6 +8,11 @@ interface ResultData {
   team2: GameResult;
 }
 
+interface CommentWithSentiment {
+  text: string;
+  sentiment: "positive" | "negative";
+}
+
 interface GameResult {
   totalPowerGeneration: number;
   geothermalMaximumInstantaneousPowerGeneration: number;
@@ -26,16 +31,19 @@ interface GameResult {
     powerStabilityNumber: number;
     infrastructureComfortScore: number;
     infrastructureComfortNumber: number;
+    environmentProblemComment: CommentWithSentiment;
+    powerStabilityComment: CommentWithSentiment;
+    infrastructureComfortComment: CommentWithSentiment;
   };
   villagersTexts: {
-    [facilityName: string]: string;
+    [facilityName: string]: CommentWithSentiment;
   };
 }
 
-const VillagerText = ({ message }: { message: string }) => (
+const VillagerText = ({ message }: { message: CommentWithSentiment }) => (
   <div className="bg-purple-50 border-2 border-purple-200 rounded-xl p-4">
     <div className="text-xl leading-relaxed text-purple-600 bg-white bg-opacity-50 rounded-lg p-3">
-      {message}
+      {message.text}
     </div>
   </div>
 );
@@ -159,12 +167,14 @@ function ComplaintRow({
   score,
   complaintsCount,
   color,
+  comment,
 }: {
   icon: string;
   label: string;
   score: number;
   complaintsCount: number;
   color: "red" | "orange" | "blue";
+  comment?: string;
 }) {
   const colorClasses: Record<typeof color, string> = {
     red: "bg-red-100 border-red-200 text-red-700",
@@ -173,23 +183,29 @@ function ComplaintRow({
   };
 
   return (
-    <div
-      className={`flex items-center justify-between p-3 rounded-xl border-2 ${colorClasses[color]}`}
-    >
-      <div className="flex items-center">
-        <span className="text-2xl mr-3">{icon}</span>
-        <span className="font-bold text-lg">{label}</span>
-      </div>
-      <div className="flex items-center gap-2">
-        <div className="px-4 py-2 rounded-full bg-white bg-opacity-40 min-w-[140px] text-center">
-          <span className="font-bold text-base">
-            スコア: {score.toFixed(1)}
-          </span>
+    <div className={`p-3 rounded-xl border-2 ${colorClasses[color]}`}>
+      <div className="flex items-center justify-between mb-2">
+        <div className="flex items-center">
+          <span className="text-2xl mr-3">{icon}</span>
+          <span className="font-bold text-lg">{label}</span>
         </div>
-        <div className="px-4 py-2 rounded-full bg-white bg-opacity-40 min-w-[90px] text-center">
-          <span className="font-bold text-base">{complaintsCount} 件</span>
+        <div className="flex items-center gap-2">
+          <div className="px-4 py-2 rounded-full bg-white bg-opacity-40 min-w-[140px] text-center">
+            <span className="font-bold text-base">
+              スコア: {score.toFixed(1)}
+            </span>
+          </div>
+          <div className="px-4 py-2 rounded-full bg-white bg-opacity-40 min-w-[90px] text-center">
+            <span className="font-bold text-base">{complaintsCount} 件</span>
+          </div>
         </div>
       </div>
+      {comment && (
+        <div className="mt-2 px-3 py-2 bg-white bg-opacity-50 rounded-lg flex items-start gap-2">
+          <span className="text-lg">💬</span>
+          <span className="text-xl font-medium">「{comment}」</span>
+        </div>
+      )}
     </div>
   );
 }
@@ -389,6 +405,9 @@ function TeamResultCard({
                 gameResultData?.happiness.environmentProblemNumber || 0
               }
               color="red"
+              comment={
+                gameResultData?.happiness.environmentProblemComment?.text
+              }
             />
             <ComplaintRow
               icon="⚡"
@@ -398,6 +417,7 @@ function TeamResultCard({
                 gameResultData?.happiness.powerStabilityNumber || 0
               }
               color="orange"
+              comment={gameResultData?.happiness.powerStabilityComment?.text}
             />
             <ComplaintRow
               icon="🏢"
@@ -407,6 +427,9 @@ function TeamResultCard({
                 gameResultData?.happiness.infrastructureComfortNumber || 0
               }
               color="blue"
+              comment={
+                gameResultData?.happiness.infrastructureComfortComment?.text
+              }
             />
           </div>
 
