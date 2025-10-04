@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { PowerLineChart } from "../dashboard/PowerChart";
+import { ResultPowerLineChart } from "./ResultPowerChart";
 
 interface ResultData {
   team1: GameResult;
@@ -158,7 +158,7 @@ function TeamResultCard({
 
       {/* グラフ */}
       <section className="flex-1 border rounded-4xl bg-white shadow-2xl p-6 mt-6">
-        <PowerLineChart sessionId={sessionId} />
+        <ResultPowerLineChart sessionId={sessionId} />
       </section>
     </div>
   );
