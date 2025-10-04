@@ -59,10 +59,12 @@ function ComplaintRow({
 
 function TeamResultCard({
   sessionId,
+  teamName,
   color,
   gameResultData,
 }: {
   sessionId: string;
+  teamName: string;
   color: "blue" | "red";
   gameResultData?: GameResult;
 }) {
@@ -76,7 +78,7 @@ function TeamResultCard({
               color === "blue" ? "text-blue-600" : "text-red-600"
             } mb-2`}
           >
-            Team {gameResultData?.totalPowerGeneration}
+            Team {teamName}
           </h2>
         </div>
 
@@ -108,11 +110,54 @@ function TeamResultCard({
 
         {/* 最大瞬間発電量 */}
         <div className="mb-8 p-6 bg-gradient-to-r from-yellow-100 to-orange-100 rounded-2xl border-2 border-yellow-300">
-          <span className="text-2xl font-bold text-orange-800">
+          <span className="text-2xl font-bold text-orange-800 mb-4 block">
             最大瞬間発電量
           </span>
-          <div className="text-center">
-            <div className="text-5xl font-bold text-orange-700">kW</div>
+
+          <div className="grid grid-cols-2 gap-4">
+            {/* 地熱発電 */}
+            <div className="bg-white bg-opacity-60 rounded-lg p-4 text-center">
+              <div className="text-red-600 text-lg mb-2">🌋 地熱</div>
+              <div className="text-2xl font-bold text-red-700">
+                {gameResultData?.geothermalMaximumInstantaneousPowerGeneration?.toFixed(
+                  2
+                ) || "0.00"}{" "}
+                kW
+              </div>
+            </div>
+
+            {/* 太陽光発電 */}
+            <div className="bg-white bg-opacity-60 rounded-lg p-4 text-center">
+              <div className="text-yellow-600 text-lg mb-2">☀️ 太陽光</div>
+              <div className="text-2xl font-bold text-yellow-700">
+                {gameResultData?.solarMaximumInstantaneousPowerGeneration?.toFixed(
+                  2
+                ) || "0.00"}{" "}
+                kW
+              </div>
+            </div>
+
+            {/* 風力発電 */}
+            <div className="bg-white bg-opacity-60 rounded-lg p-4 text-center">
+              <div className="text-green-600 text-lg mb-2">💨 風力</div>
+              <div className="text-2xl font-bold text-green-700">
+                {gameResultData?.windMaximumInstantaneousPowerGeneration?.toFixed(
+                  2
+                ) || "0.00"}{" "}
+                kW
+              </div>
+            </div>
+
+            {/* 人力発電 */}
+            <div className="bg-white bg-opacity-60 rounded-lg p-4 text-center">
+              <div className="text-blue-600 text-lg mb-2">🚴 人力</div>
+              <div className="text-2xl font-bold text-blue-700">
+                {gameResultData?.hydrogenMaximumInstantaneousPowerGeneration?.toFixed(
+                  2
+                ) || "0.00"}{" "}
+                kW
+              </div>
+            </div>
           </div>
         </div>
 
@@ -170,12 +215,18 @@ export default function ResultPage() {
   const [error, setError] = useState<string | null>(null);
   const [sessionId1, setSessionId1] = useState<string>("default_session");
   const [sessionId2, setSessionId2] = useState<string>("default_session");
+  const [teamName1, setTeamName1] = useState<string>("Team 1");
+  const [teamName2, setTeamName2] = useState<string>("Team 2");
 
   useEffect(() => {
     const sessionId1 = localStorage.getItem("sessionId1") || "default_session";
     const sessionId2 = localStorage.getItem("sessionId2") || "default_session";
+    const teamName1 = localStorage.getItem("team1Name") || "Team 1";
+    const teamName2 = localStorage.getItem("team2Name") || "Team 2";
     setSessionId1(sessionId1);
     setSessionId2(sessionId2);
+    setTeamName1(teamName1);
+    setTeamName2(teamName2);
     const fetchResultData = async () => {
       try {
         const res1 = await fetch(
@@ -220,11 +271,13 @@ export default function ResultPage() {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
         <TeamResultCard
           sessionId={sessionId1}
+          teamName={teamName1}
           color="blue"
           gameResultData={resultData.team1}
         />
         <TeamResultCard
           sessionId={sessionId2}
+          teamName={teamName2}
           color="red"
           gameResultData={resultData.team2}
         />
