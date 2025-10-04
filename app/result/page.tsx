@@ -28,12 +28,14 @@ export interface GameResult {
 function ComplaintRow({
   icon,
   label,
-  value,
+  score,
+  complaintsCount,
   color,
 }: {
   icon: string;
   label: string;
-  value: number;
+  score: number;
+  complaintsCount: number;
   color: "red" | "orange" | "blue";
 }) {
   const colorClasses: Record<typeof color, string> = {
@@ -50,8 +52,13 @@ function ComplaintRow({
         <span className="text-2xl mr-3">{icon}</span>
         <span className="font-bold text-lg">{label}</span>
       </div>
-      <div className="px-3 py-1 rounded-full bg-white bg-opacity-40">
-        <span className="font-bold text-lg">{value} 件</span>
+      <div className="flex items-center gap-3">
+        <div className="px-3 py-1 rounded-full bg-white bg-opacity-40">
+          <span className="font-bold text-lg">スコア: {score.toFixed(1)}</span>
+        </div>
+        <div className="px-3 py-1 rounded-full bg-white bg-opacity-40">
+          <span className="font-bold text-lg">{complaintsCount} 件</span>
+        </div>
       </div>
     </div>
   );
@@ -184,19 +191,28 @@ function TeamResultCard({
             <ComplaintRow
               icon="🌿"
               label="環境問題（CO₂・騒音）"
-              value={3}
+              score={gameResultData?.happiness.environmentProblemScore || 0}
+              complaintsCount={
+                gameResultData?.happiness.environmentProblemNumber || 0
+              }
               color="red"
             />
             <ComplaintRow
               icon="⚡"
               label="電力安定性（停電回数）"
-              value={3}
+              score={gameResultData?.happiness.powerStabilityScore || 0}
+              complaintsCount={
+                gameResultData?.happiness.powerStabilityNumber || 0
+              }
               color="orange"
             />
             <ComplaintRow
               icon="🏢"
               label="インフラ（家・電車・お店）"
-              value={3}
+              score={gameResultData?.happiness.infrastructureComfortScore || 0}
+              complaintsCount={
+                gameResultData?.happiness.infrastructureComfortNumber || 0
+              }
               color="blue"
             />
           </div>
