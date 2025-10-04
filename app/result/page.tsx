@@ -117,7 +117,7 @@ function TeamResultCard({
           <div className="grid grid-cols-2 gap-4">
             {/* 地熱発電 */}
             <div className="bg-white bg-opacity-60 rounded-lg p-4 text-center">
-              <div className="text-red-600 text-lg mb-2">🌋 地熱</div>
+              <div className="text-red-600 text-lg mb-2">地熱</div>
               <div className="text-2xl font-bold text-red-700">
                 {gameResultData?.geothermalMaximumInstantaneousPowerGeneration?.toFixed(
                   2
@@ -128,7 +128,7 @@ function TeamResultCard({
 
             {/* 太陽光発電 */}
             <div className="bg-white bg-opacity-60 rounded-lg p-4 text-center">
-              <div className="text-yellow-600 text-lg mb-2">☀️ 太陽光</div>
+              <div className="text-yellow-600 text-lg mb-2">太陽光</div>
               <div className="text-2xl font-bold text-yellow-700">
                 {gameResultData?.solarMaximumInstantaneousPowerGeneration?.toFixed(
                   2
@@ -139,7 +139,7 @@ function TeamResultCard({
 
             {/* 風力発電 */}
             <div className="bg-white bg-opacity-60 rounded-lg p-4 text-center">
-              <div className="text-green-600 text-lg mb-2">💨 風力</div>
+              <div className="text-green-600 text-lg mb-2">風力</div>
               <div className="text-2xl font-bold text-green-700">
                 {gameResultData?.windMaximumInstantaneousPowerGeneration?.toFixed(
                   2
@@ -150,7 +150,7 @@ function TeamResultCard({
 
             {/* 人力発電 */}
             <div className="bg-white bg-opacity-60 rounded-lg p-4 text-center">
-              <div className="text-blue-600 text-lg mb-2">🚴 人力</div>
+              <div className="text-blue-600 text-lg mb-2">人力</div>
               <div className="text-2xl font-bold text-blue-700">
                 {gameResultData?.hydrogenMaximumInstantaneousPowerGeneration?.toFixed(
                   2
@@ -161,11 +161,13 @@ function TeamResultCard({
           </div>
         </div>
 
-        {/* CO₂削減量 */}
+        {/* CO₂排出量 */}
         <div className="mb-8 p-6 bg-gradient-to-r from-green-100 to-emerald-100 rounded-2xl border-2 border-green-300">
-          <span className="text-2xl font-bold text-green-800">CO₂削減量</span>
+          <span className="text-2xl font-bold text-green-800">CO₂排出量</span>
           <div className="text-center">
-            <div className="text-5xl font-bold text-green-700">kw</div>
+            <div className="text-5xl font-bold text-green-700">
+              {gameResultData?.co2ReductionAmount?.toFixed(2) || "0.00"} kg
+            </div>
           </div>
         </div>
 
