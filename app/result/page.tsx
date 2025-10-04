@@ -195,6 +195,9 @@ export default function ResultPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
+  const sessionId1 = localStorage.getItem("sessionId1") || "default_session";
+  const sessionId2 = localStorage.getItem("sessionId2") || "default_session";
+
   useEffect(() => {
     const fetchResultData = async () => {
       try {
@@ -246,8 +249,16 @@ export default function ResultPage() {
   return (
     <div className="min-h-screen bg-gradient-to-b from-[rgb(194,238,112)] to-[rgb(60,223,156)] p-6">
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-        <TeamResultCard team={resultData.team1} sessionId="72" color="blue" />
-        <TeamResultCard team={resultData.team2} sessionId="73" color="red" />
+        <TeamResultCard
+          team={resultData.team1}
+          sessionId={sessionId1}
+          color="blue"
+        />
+        <TeamResultCard
+          team={resultData.team2}
+          sessionId={sessionId2}
+          color="red"
+        />
       </div>
       <div className="text-center">
         <button
