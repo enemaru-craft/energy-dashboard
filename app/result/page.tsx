@@ -3,33 +3,27 @@
 import { useState, useEffect } from "react";
 import { PowerLineChart } from "../dashboard/PowerChart";
 
-interface TeamResultData {
-  teamName: string;
-  totalPower: number;
-  peakPower: number;
-  peakTime: string;
-  co2Reduction: number;
-  complaints: {
-    environment: number;
-    stability: number;
-    infrastructure: number;
-  };
-  timeSeriesData: {
-    labels: string[];
-    powerData: number[];
-  };
-}
-
 interface ResultData {
-  team1: TeamResultData;
-  team2: TeamResultData;
+  team1: GameResult;
+  team2: GameResult;
 }
 
-const calculateHappiness = (complaints: TeamResultData["complaints"]) => {
-  const total =
-    complaints.environment + complaints.stability + complaints.infrastructure;
-  return Math.max(0, Math.min(100, 100 - total * 3));
-};
+export interface GameResult {
+  totalPowerGeneration: number;
+  hydrogenMaximumInstantaneousPowerGeneration: number;
+  windMaximumInstantaneousPowerGeneration: number;
+  solarMaximumInstantaneousPowerGeneration: number;
+  geothermalMaximumInstantaneousPowerGeneration: number;
+  co2ReductionAmount: number;
+  happiness: {
+    environmentProblemScore: number;
+    environmentProblemNumber: number;
+    powerStabilityScore: number;
+    powerStabilityNumber: number;
+    infrastructureComfortScore: number;
+    infrastructureComfortNumber: number;
+  };
+}
 
 function ComplaintRow({
   icon,
@@ -63,53 +57,15 @@ function ComplaintRow({
   );
 }
 
-export interface GameResult {
-  totalPowerGeneration: number;
-  hydrogenMaximumInstantaneousPowerGeneration: number;
-  windMaximumInstantaneousPowerGeneration: number;
-  solarMaximumInstantaneousPowerGeneration: number;
-  geothermalMaximumInstantaneousPowerGeneration: number;
-  co2ReductionAmount: number;
-  happiness: {
-    environmentProblemScore: number;
-    environmentProblemNumber: number;
-    powerStabilityScore: number;
-    powerStabilityNumber: number;
-    infrastructureComfortScore: number;
-    infrastructureComfortNumber: number;
-  };
-}
-
 function TeamResultCard({
-  team,
   sessionId,
   color,
+  gameResultData,
 }: {
-  team: TeamResultData;
   sessionId: string;
   color: "blue" | "red";
+  gameResultData?: GameResult;
 }) {
-  const [responseData, setResponseData] = useState<GameResult | null>(null);
-  const [error, setError] = useState<string | null>(null);
-  useEffect(() => {
-    const fetchResult = async () => {
-      try {
-        const res = await fetch(
-          `${process.env.NEXT_PUBLIC_BASE_URL}/get-game-result?session_id=${sessionId}`
-        );
-        if (!res.ok) throw new Error(`API error: ${res.status}`);
-
-        const data: GameResult = await res.json();
-        setResponseData(data);
-      } catch (err: any) {
-        setError(err.message);
-        console.error("Error fetching game result:", err);
-      }
-    };
-
-    fetchResult();
-  }, [sessionId]);
-
   return (
     <div>
       <div className="bg-white rounded-3xl shadow-2xl p-8 border-4 border-gray-200">
@@ -120,7 +76,7 @@ function TeamResultCard({
               color === "blue" ? "text-blue-600" : "text-red-600"
             } mb-2`}
           >
-            Team {team.teamName}
+            Team {gameResultData?.totalPowerGeneration}
           </h2>
         </div>
 
@@ -145,7 +101,7 @@ function TeamResultCard({
                 color === "blue" ? "text-blue-700" : "text-red-700"
               }`}
             >
-              {responseData?.totalPowerGeneration?.toFixed(3)}kWh
+              {gameResultData?.totalPowerGeneration.toFixed(3)} kW
             </div>
           </div>
         </div>
@@ -156,9 +112,7 @@ function TeamResultCard({
             最大瞬間発電量
           </span>
           <div className="text-center">
-            <div className="text-5xl font-bold text-orange-700">
-              {team.peakPower.toFixed(1)} kW
-            </div>
+            <div className="text-5xl font-bold text-orange-700">kW</div>
           </div>
         </div>
 
@@ -166,9 +120,7 @@ function TeamResultCard({
         <div className="mb-8 p-6 bg-gradient-to-r from-green-100 to-emerald-100 rounded-2xl border-2 border-green-300">
           <span className="text-2xl font-bold text-green-800">CO₂削減量</span>
           <div className="text-center">
-            <div className="text-5xl font-bold text-green-700">
-              {team.co2Reduction.toFixed(1)} kg
-            </div>
+            <div className="text-5xl font-bold text-green-700">kw</div>
           </div>
         </div>
 
@@ -185,19 +137,19 @@ function TeamResultCard({
             <ComplaintRow
               icon="🌿"
               label="環境問題（CO₂・騒音）"
-              value={team.complaints.environment}
+              value={3}
               color="red"
             />
             <ComplaintRow
               icon="⚡"
               label="電力安定性（停電回数）"
-              value={team.complaints.stability}
+              value={3}
               color="orange"
             />
             <ComplaintRow
               icon="🏢"
               label="インフラ（家・電車・お店）"
-              value={team.complaints.infrastructure}
+              value={3}
               color="blue"
             />
           </div>
@@ -226,28 +178,20 @@ export default function ResultPage() {
     setSessionId2(sessionId2);
     const fetchResultData = async () => {
       try {
-        await new Promise((resolve) => setTimeout(resolve, 1000));
-        // TODO: 実際は `/get-game-result` から取得する
-        setResultData({
-          team1: {
-            teamName: "A",
-            totalPower: 125,
-            peakPower: 45,
-            peakTime: "14:30",
-            co2Reduction: 40,
-            complaints: { environment: 8, stability: 5, infrastructure: 3 },
-            timeSeriesData: { labels: [], powerData: [] },
-          },
-          team2: {
-            teamName: "B",
-            totalPower: 100,
-            peakPower: 38,
-            peakTime: "13:45",
-            co2Reduction: 30,
-            complaints: { environment: 10, stability: 7, infrastructure: 6 },
-            timeSeriesData: { labels: [], powerData: [] },
-          },
-        });
+        const res1 = await fetch(
+          `${process.env.NEXT_PUBLIC_BASE_URL}/get-game-result?session_id=${sessionId1}`
+        );
+        const res2 = await fetch(
+          `${process.env.NEXT_PUBLIC_BASE_URL}/get-game-result?session_id=${sessionId2}`
+        );
+
+        if (!res1.ok) throw new Error(`API1 error: ${res1.status}`);
+        if (!res2.ok) throw new Error(`API2 error: ${res2.status}`);
+
+        const data1: GameResult = await res1.json();
+        const data2: GameResult = await res2.json();
+
+        setResultData({ team1: data1, team2: data2 });
       } catch {
         setError("データ取得失敗");
       } finally {
@@ -275,14 +219,14 @@ export default function ResultPage() {
     <div className="min-h-screen bg-gradient-to-b from-[rgb(194,238,112)] to-[rgb(60,223,156)] p-6">
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
         <TeamResultCard
-          team={resultData.team1}
           sessionId={sessionId1}
           color="blue"
+          gameResultData={resultData.team1}
         />
         <TeamResultCard
-          team={resultData.team2}
           sessionId={sessionId2}
           color="red"
+          gameResultData={resultData.team2}
         />
       </div>
       <div className="text-center">
