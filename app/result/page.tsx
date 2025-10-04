@@ -42,7 +42,7 @@ const VillagerText = ({ facilityName, message }: VillagerTextProps) => (
     <div className="flex items-center mb-2">
       <div className="font-bold text-lg text-purple-700">{facilityName}</div>
     </div>
-    <div className="text-base leading-relaxed text-purple-600 bg-white bg-opacity-50 rounded-lg p-3 text-xl">
+    <div className="text-xl leading-relaxed text-purple-600 bg-white bg-opacity-50 rounded-lg p-3">
       {message}
     </div>
   </div>
@@ -94,17 +94,25 @@ function TeamResultCard({
   teamName,
   color,
   gameResultData,
+  animationStep = 0,
 }: {
   sessionId: string;
   teamName: string;
   color: "blue" | "red";
   gameResultData?: GameResult;
+  animationStep?: number;
 }) {
   return (
     <div>
       <div className="bg-white rounded-3xl shadow-2xl p-8 border-4 border-gray-200">
         {/* チーム名 */}
-        <div className="text-center mb-6">
+        <div
+          className={`text-center mb-6 transform transition-all duration-700 ${
+            animationStep >= 0
+              ? "translate-y-0 opacity-100"
+              : "translate-y-8 opacity-0"
+          }`}
+        >
           <h2
             className={`text-3xl font-bold ${
               color === "blue" ? "text-blue-600" : "text-red-600"
@@ -116,7 +124,11 @@ function TeamResultCard({
 
         {/* 総発電量 */}
         <div
-          className={`mb-8 p-6 rounded-2xl border-2 ${
+          className={`mb-8 p-6 rounded-2xl border-2 transform transition-all duration-700 delay-300 ${
+            animationStep >= 1
+              ? "translate-y-0 opacity-100 scale-100"
+              : "translate-y-8 opacity-0 scale-95"
+          } ${
             color === "blue"
               ? "bg-gradient-to-r from-blue-100 to-cyan-100 border-blue-300"
               : "bg-gradient-to-r from-red-100 to-pink-100 border-red-300"
@@ -141,7 +153,13 @@ function TeamResultCard({
         </div>
 
         {/* 最大瞬間発電量 */}
-        <div className="mb-8 p-6 bg-gradient-to-r from-yellow-100 to-orange-100 rounded-2xl border-2 border-yellow-300">
+        <div
+          className={`mb-8 p-6 bg-gradient-to-r from-yellow-100 to-orange-100 rounded-2xl border-2 border-yellow-300 transform transition-all duration-700 delay-600 ${
+            animationStep >= 2
+              ? "translate-y-0 opacity-100 scale-100"
+              : "translate-y-8 opacity-0 scale-95"
+          }`}
+        >
           <span className="text-2xl font-bold text-orange-800 mb-4 block">
             最大瞬間発電量
           </span>
@@ -194,7 +212,13 @@ function TeamResultCard({
         </div>
 
         {/* CO₂排出量 */}
-        <div className="mb-8 p-6 bg-gradient-to-r from-green-100 to-emerald-100 rounded-2xl border-2 border-green-300">
+        <div
+          className={`mb-8 p-6 bg-gradient-to-r from-green-100 to-emerald-100 rounded-2xl border-2 border-green-300 transform transition-all duration-700 delay-900 ${
+            animationStep >= 3
+              ? "translate-y-0 opacity-100 scale-100"
+              : "translate-y-8 opacity-0 scale-95"
+          }`}
+        >
           <span className="text-2xl font-bold text-green-800">CO₂排出量</span>
           <div className="text-center">
             <div className="text-5xl font-bold text-green-700">
@@ -204,7 +228,13 @@ function TeamResultCard({
         </div>
 
         {/* 幸福度 */}
-        <div className="p-6 bg-gradient-to-r from-purple-100 to-pink-100 rounded-2xl border-2 border-purple-300">
+        <div
+          className={`p-6 bg-gradient-to-r from-purple-100 to-pink-100 rounded-2xl border-2 border-purple-300 transform transition-all duration-700 delay-1200 ${
+            animationStep >= 4
+              ? "translate-y-0 opacity-100 scale-100"
+              : "translate-y-8 opacity-0 scale-95"
+          }`}
+        >
           <span className="text-2xl font-bold text-purple-800">
             街の暮らしやすさ
           </span>
@@ -294,7 +324,13 @@ function TeamResultCard({
       </div>
 
       {/* グラフ */}
-      <section className="flex-1 border rounded-4xl bg-white shadow-2xl p-6 mt-6">
+      <section
+        className={`flex-1 border rounded-4xl bg-white shadow-2xl p-6 mt-6 transform transition-all duration-700 delay-1500 ${
+          animationStep >= 5
+            ? "translate-y-0 opacity-100 scale-100"
+            : "translate-y-8 opacity-0 scale-95"
+        }`}
+      >
         <ResultPowerLineChart sessionId={sessionId} />
       </section>
     </div>
@@ -309,6 +345,7 @@ export default function ResultPage() {
   const [sessionId2, setSessionId2] = useState<string>("default_session");
   const [teamName1, setTeamName1] = useState<string>("Team 1");
   const [teamName2, setTeamName2] = useState<string>("Team 2");
+  const [animationStep, setAnimationStep] = useState(0);
 
   useEffect(() => {
     const sessionId1 = localStorage.getItem("sessionId1") || "default_session";
@@ -345,6 +382,18 @@ export default function ResultPage() {
     fetchResultData();
   }, []);
 
+  // アニメーション制御
+  useEffect(() => {
+    if (!loading && resultData) {
+      const steps = [0, 1, 2, 3, 4, 5];
+      steps.forEach((step, index) => {
+        setTimeout(() => {
+          setAnimationStep(step);
+        }, index * 500); // 0.5秒間隔で順番に表示
+      });
+    }
+  }, [loading, resultData]);
+
   // --- スピナー付きローディング画面 ---
   if (loading)
     return (
@@ -366,15 +415,23 @@ export default function ResultPage() {
           teamName={teamName1}
           color="blue"
           gameResultData={resultData.team1}
+          animationStep={animationStep}
         />
         <TeamResultCard
           sessionId={sessionId2}
           teamName={teamName2}
           color="red"
           gameResultData={resultData.team2}
+          animationStep={animationStep}
         />
       </div>
-      <div className="text-center">
+      <div
+        className={`text-center transform transition-all duration-700 delay-1800 ${
+          animationStep >= 5
+            ? "translate-y-0 opacity-100"
+            : "translate-y-8 opacity-0"
+        }`}
+      >
         <button
           onClick={() => (window.location.href = "/dashboard")}
           className="bg-gradient-to-r bg-white text-black font-bold py-4 px-10 rounded-full shadow-2xl transform hover:scale-110  duration-300 text-xl"
