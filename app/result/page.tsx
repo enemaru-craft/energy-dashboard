@@ -8,22 +8,45 @@ interface ResultData {
   team2: GameResult;
 }
 
-export interface GameResult {
+interface GameResult {
   totalPowerGeneration: number;
-  hydrogenMaximumInstantaneousPowerGeneration: number;
-  windMaximumInstantaneousPowerGeneration: number;
-  solarMaximumInstantaneousPowerGeneration: number;
   geothermalMaximumInstantaneousPowerGeneration: number;
+  solarMaximumInstantaneousPowerGeneration: number;
   co2ReductionAmount: number;
+  windMaximumInstantaneousPowerGeneration: number;
+  hydrogenMaximumInstantaneousPowerGeneration: number;
   happiness: {
     environmentProblemScore: number;
+    economyProblemScore: number;
+    securityProblemScore: number;
     environmentProblemNumber: number;
+    economyProblemNumber: number;
+    securityProblemNumber: number;
     powerStabilityScore: number;
     powerStabilityNumber: number;
     infrastructureComfortScore: number;
     infrastructureComfortNumber: number;
   };
+  villagersTexts: {
+    [facilityName: string]: string;
+  };
 }
+
+interface VillagerTextProps {
+  facilityName: string;
+  message: string;
+}
+
+const VillagerText = ({ facilityName, message }: VillagerTextProps) => (
+  <div className="bg-purple-50 border-2 border-purple-200 rounded-xl p-4">
+    <div className="flex items-center mb-2">
+      <div className="font-bold text-lg text-purple-700">{facilityName}</div>
+    </div>
+    <div className="text-base leading-relaxed text-purple-600 bg-white bg-opacity-50 rounded-lg p-3 text-xl">
+      {message}
+    </div>
+  </div>
+);
 
 function ComplaintRow({
   icon,
@@ -112,7 +135,7 @@ function TeamResultCard({
                 color === "blue" ? "text-blue-700" : "text-red-700"
               }`}
             >
-              {gameResultData?.totalPowerGeneration.toFixed(3)} kW
+              {gameResultData?.totalPowerGeneration.toFixed(3)} kWh
             </div>
           </div>
         </div>
@@ -189,7 +212,7 @@ function TeamResultCard({
             <div className="text-5xl font-bold text-purple-700 mb-3"></div>
           </div>
 
-          <div className="space-y-3">
+          <div className="space-y-3 mb-6">
             <ComplaintRow
               icon="🌿"
               label="環境問題（CO₂・騒音）"
@@ -218,6 +241,55 @@ function TeamResultCard({
               color="blue"
             />
           </div>
+
+          {/* 村人の声 */}
+          {gameResultData?.villagersTexts && (
+            <div>
+              <h4 className="text-lg font-bold text-purple-800 mb-3">
+                村人の声
+              </h4>
+              <div className="grid grid-cols-2 gap-3">
+                {gameResultData.villagersTexts.facility_firestation && (
+                  <VillagerText
+                    facilityName="消防署"
+                    message={gameResultData.villagersTexts.facility_firestation}
+                  />
+                )}
+                {gameResultData.villagersTexts.facility_shoppingmall && (
+                  <VillagerText
+                    facilityName="ショッピングモール"
+                    message={
+                      gameResultData.villagersTexts.facility_shoppingmall
+                    }
+                  />
+                )}
+                {gameResultData.villagersTexts.factory && (
+                  <VillagerText
+                    facilityName="工場"
+                    message={gameResultData.villagersTexts.factory}
+                  />
+                )}
+                {gameResultData.villagersTexts.house && (
+                  <VillagerText
+                    facilityName="住宅"
+                    message={gameResultData.villagersTexts.house}
+                  />
+                )}
+                {gameResultData.villagersTexts.light && (
+                  <VillagerText
+                    facilityName="街灯"
+                    message={gameResultData.villagersTexts.light}
+                  />
+                )}
+                {gameResultData.villagersTexts.train && (
+                  <VillagerText
+                    facilityName="電車"
+                    message={gameResultData.villagersTexts.train}
+                  />
+                )}
+              </div>
+            </div>
+          )}
         </div>
       </div>
 
