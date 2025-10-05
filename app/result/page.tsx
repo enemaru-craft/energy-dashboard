@@ -413,7 +413,7 @@ function TeamResultCard({
           </div>
         </div>
 
-        {/* CO₂排出量 */}
+        {/* CO₂削減量 */}
         <div
           className={`mb-8 p-6 bg-gradient-to-r from-green-100 to-emerald-100 rounded-2xl border-2 border-green-300 transform transition-all duration-700 delay-900 ${
             animationStep >= 3
@@ -421,7 +421,7 @@ function TeamResultCard({
               : "translate-y-8 opacity-0 scale-95"
           }`}
         >
-          <span className="text-2xl font-bold text-green-800">CO₂排出量</span>
+          <span className="text-2xl font-bold text-green-800">CO₂削減量</span>
           <div className="text-center">
             <div className="text-5xl font-bold text-green-700">
               {gameResultData?.co2ReductionAmount?.toFixed(2) || "0.00"} kg
