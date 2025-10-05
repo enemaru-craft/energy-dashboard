@@ -100,8 +100,8 @@ const PowerGenerationPieChart = ({
     <div
       className={`rounded-2xl shadow-md p-6 border-2 ${
         color === "blue"
-          ? "bg-gradient-to-r from-blue-100 to-cyan-100 border-blue-300"
-          : "bg-gradient-to-r from-red-100 to-pink-100 border-red-300"
+          ? "bg-[rgb(200,247,254)] border-blue-300"
+          : "bg-[rgb(253,226,238)] border-red-300"
       }`}
     >
       <h3
