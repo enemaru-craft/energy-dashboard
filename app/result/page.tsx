@@ -20,6 +20,11 @@ interface GameResult {
   co2ReductionAmount: number;
   windMaximumInstantaneousPowerGeneration: number;
   hydrogenMaximumInstantaneousPowerGeneration: number;
+  geothermalTotalPower: number;
+  fireTotalPower: number;
+  windTotalPower: number;
+  solarTotalPower: number;
+  hydrogenTotalPower: number;
   happiness: {
     environmentProblemScore: number;
     economyProblemScore: number;
@@ -47,6 +52,140 @@ const VillagerText = ({ message }: { message: CommentWithSentiment }) => (
     </div>
   </div>
 );
+
+// 発電割合円グラフコンポーネント
+const PowerGenerationPieChart = ({
+  gameResultData,
+  color,
+}: {
+  gameResultData?: GameResult;
+  color: "blue" | "red";
+}) => {
+  if (!gameResultData) return null;
+
+  const data = [
+    {
+      name: "地熱",
+      value: gameResultData.geothermalTotalPower || 0,
+      color: "#ef4444",
+    },
+    {
+      name: "太陽光",
+      value: gameResultData.solarTotalPower || 0,
+      color: "#f59e0b",
+    },
+    {
+      name: "風力",
+      value: gameResultData.windTotalPower || 0,
+      color: "#10b981",
+    },
+    {
+      name: "人力",
+      value: gameResultData.hydrogenTotalPower || 0,
+      color: "#3b82f6",
+    },
+    {
+      name: "火力",
+      value: gameResultData.fireTotalPower || 0,
+      color: "#dc2626",
+    },
+  ];
+
+  const total = data.reduce((sum, item) => sum + item.value, 0);
+  if (total === 0) return null;
+
+  let cumulativeAngle = 0;
+
+  return (
+    <div
+      className={`rounded-2xl shadow-md p-6 border-2 ${
+        color === "blue"
+          ? "bg-gradient-to-r from-blue-100 to-cyan-100 border-blue-300"
+          : "bg-gradient-to-r from-red-100 to-pink-100 border-red-300"
+      }`}
+    >
+      <h3
+        className={`text-xl font-bold mb-4 text-center ${
+          color === "blue" ? "text-blue-800" : "text-red-800"
+        }`}
+      >
+        発電割合
+      </h3>
+      <div className="flex flex-col items-center">
+        <svg width="200" height="200" className="mb-4">
+          {data.map((item, index) => {
+            if (item.value === 0) return null;
+
+            const percentage = (item.value / total) * 100;
+            const angle = (item.value / total) * 360;
+            const startAngle = cumulativeAngle;
+            const endAngle = cumulativeAngle + angle;
+
+            const x1 = 100 + 80 * Math.cos((startAngle * Math.PI) / 180);
+            const y1 = 100 + 80 * Math.sin((startAngle * Math.PI) / 180);
+            const x2 = 100 + 80 * Math.cos((endAngle * Math.PI) / 180);
+            const y2 = 100 + 80 * Math.sin((endAngle * Math.PI) / 180);
+
+            const largeArc = angle > 180 ? 1 : 0;
+
+            const pathData = [
+              `M 100 100`,
+              `L ${x1} ${y1}`,
+              `A 80 80 0 ${largeArc} 1 ${x2} ${y2}`,
+              `Z`,
+            ].join(" ");
+
+            cumulativeAngle += angle;
+
+            return (
+              <path
+                key={index}
+                d={pathData}
+                fill={item.color}
+                stroke="white"
+                strokeWidth="2"
+              />
+            );
+          })}
+          <circle cx="100" cy="100" r="30" fill="white" />
+          <text
+            x="100"
+            y="95"
+            textAnchor="middle"
+            className="text-sm font-bold fill-gray-700"
+          >
+            合計
+          </text>
+          <text
+            x="100"
+            y="110"
+            textAnchor="middle"
+            className="text-xs fill-gray-600"
+          >
+            {total.toFixed(1)}kWh
+          </text>
+        </svg>
+        <div className="grid grid-cols-2 gap-2 text-sm">
+          {data.map((item, index) => {
+            if (item.value === 0) return null;
+            const percentage = ((item.value / total) * 100).toFixed(1);
+            return (
+              <div key={index} className="flex items-center gap-2">
+                <div
+                  className="w-4 h-4 rounded-sm flex-shrink-0"
+                  style={{ backgroundColor: item.color }}
+                />
+                <span className="text-gray-700 text-xs">
+                  {item.name}: {percentage}%
+                </span>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+    </div>
+  );
+};
 
 // canvas-confetti用の型定義
 declare global {
@@ -324,33 +463,46 @@ function TeamResultCard({
           </h2>
         </div>
 
-        {/* 総発電量 */}
+        {/* 総発電量と円グラフ */}
         <div
-          className={`mb-8 p-6 rounded-2xl border-2 transform transition-all duration-700 delay-300 ${
+          className={`mb-8 flex gap-6 transform transition-all duration-700 delay-300 ${
             animationStep >= 1
               ? "translate-y-0 opacity-100 scale-100"
               : "translate-y-8 opacity-0 scale-95"
-          } ${
-            color === "blue"
-              ? "bg-gradient-to-r from-blue-100 to-cyan-100 border-blue-300"
-              : "bg-gradient-to-r from-red-100 to-pink-100 border-red-300"
           }`}
         >
-          <span
-            className={`text-2xl font-bold ${
-              color === "blue" ? "text-blue-800" : "text-red-800"
+          {/* 総発電量 */}
+          <div
+            className={`flex-1 p-6 rounded-2xl border-2 flex flex-col justify-center ${
+              color === "blue"
+                ? "bg-gradient-to-r from-blue-100 to-cyan-100 border-blue-300"
+                : "bg-gradient-to-r from-red-100 to-pink-100 border-red-300"
             }`}
           >
-            総発電量(kWh)
-          </span>
-          <div className="text-center mb-4">
-            <div
-              className={`text-5xl font-bold mb-2  ${
-                color === "blue" ? "text-blue-700" : "text-red-700"
+            <span
+              className={`text-2xl font-bold text-center block mb-4 ${
+                color === "blue" ? "text-blue-800" : "text-red-800"
               }`}
             >
-              {gameResultData?.totalPowerGeneration.toFixed(3)} kWh
+              総発電量(kWh)
+            </span>
+            <div className="text-center">
+              <div
+                className={`text-5xl font-bold ${
+                  color === "blue" ? "text-blue-700" : "text-red-700"
+                }`}
+              >
+                {gameResultData?.totalPowerGeneration.toFixed(3)} kWh
+              </div>
             </div>
+          </div>
+
+          {/* 発電割合円グラフ */}
+          <div className="flex-shrink-0">
+            <PowerGenerationPieChart
+              gameResultData={gameResultData}
+              color={color}
+            />
           </div>
         </div>
 
