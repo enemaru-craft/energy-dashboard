@@ -484,7 +484,7 @@ function TeamResultCard({
                 color === "blue" ? "text-blue-800" : "text-red-800"
               }`}
             >
-              総発電量(kWh)
+              みんなで作ったでんきの｢量｣(総発電量(kWh))
             </span>
             <div className="text-center">
               <div
@@ -515,7 +515,7 @@ function TeamResultCard({
           }`}
         >
           <span className="text-2xl font-bold text-orange-800 mb-4 block">
-            最大瞬間発電量
+            いちばん発電のパワーがでたときの値(最大瞬間発電量(kW))
           </span>
 
           <div className="grid grid-cols-2 gap-4">
