@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useMemo } from "react";
+import { useLanguage } from "../../components/LanguageProvider";
 import { ResultPowerLineChart } from "./ResultPowerChart";
 
 interface ResultData {
@@ -53,7 +54,7 @@ const VillagerText = ({ message }: { message: CommentWithSentiment }) => (
   </div>
 );
 
-// 発電割合円グラフコンポーネント
+// Pie chart summarizing power generation shares
 const PowerGenerationPieChart = ({
   gameResultData,
   color,
@@ -61,31 +62,32 @@ const PowerGenerationPieChart = ({
   gameResultData?: GameResult;
   color: "blue" | "red";
 }) => {
+  const { t } = useLanguage();
   if (!gameResultData) return null;
 
   const data = [
     {
-      name: "地熱",
+      name: t("energy.geothermal"),
       value: gameResultData.geothermalTotalPower || 0,
       color: "#ef4444",
     },
     {
-      name: "太陽光",
+      name: t("energy.solar"),
       value: gameResultData.solarTotalPower || 0,
       color: "#f59e0b",
     },
     {
-      name: "風力",
+      name: t("energy.wind"),
       value: gameResultData.windTotalPower || 0,
       color: "#10b981",
     },
     {
-      name: "人力",
+      name: t("energy.hydrogen"),
       value: gameResultData.hydrogenTotalPower || 0,
       color: "#3b82f6",
     },
     {
-      name: "火力",
+      name: t("energy.fireShort"),
       value: gameResultData.fireTotalPower || 0,
       color: "#dc2626",
     },
@@ -109,7 +111,7 @@ const PowerGenerationPieChart = ({
           color === "blue" ? "text-blue-800" : "text-red-800"
         }`}
       >
-        発電割合
+        {t("result.summary.energyMixTitle")}
       </h3>
       <div className="flex flex-col items-center">
         <svg width="200" height="200" className="mb-4">
@@ -154,7 +156,7 @@ const PowerGenerationPieChart = ({
             textAnchor="middle"
             className="text-sm font-bold fill-gray-700"
           >
-            合計
+            {t("result.summary.energyMixTotal")}
           </text>
           <text
             x="100"
@@ -187,7 +189,7 @@ const PowerGenerationPieChart = ({
   );
 };
 
-// canvas-confetti用の型定義
+// Typings for canvas-confetti script
 declare global {
   interface Window {
     confetti: (options?: {
@@ -201,11 +203,11 @@ declare global {
   }
 }
 
-// クラッカーアニメーションコンポーネント
+// Confetti animation component
 const CrackerAnimation = ({ show }: { show: boolean }) => {
   const [isScriptLoaded, setIsScriptLoaded] = useState(false);
 
-  // canvas-confettiスクリプトを動的に読み込む
+  // Dynamically load the canvas-confetti script
   useEffect(() => {
     if (typeof window !== "undefined") {
       if (!document.querySelector('script[src*="canvas-confetti"]')) {
@@ -222,19 +224,19 @@ const CrackerAnimation = ({ show }: { show: boolean }) => {
     }
   }, []);
 
-  // confetti演出の実行
+  // Trigger confetti animation sequences
   useEffect(() => {
     if (!show || !isScriptLoaded || !window.confetti) return;
 
     const runConfetti = () => {
-      // 中央からの基本的なconfetti
+      // Base burst from the center
       window.confetti({
         particleCount: 100,
         spread: 70,
         origin: { y: 0.6 },
       });
 
-      // 左側からのconfetti
+      // Burst from the left edge
       setTimeout(() => {
         window.confetti({
           particleCount: 50,
@@ -244,7 +246,7 @@ const CrackerAnimation = ({ show }: { show: boolean }) => {
         });
       }, 200);
 
-      // 右側からのconfetti
+      // Burst from the right edge
       setTimeout(() => {
         window.confetti({
           particleCount: 50,
@@ -254,7 +256,7 @@ const CrackerAnimation = ({ show }: { show: boolean }) => {
         });
       }, 400);
 
-      // 上からの金色のconfetti
+      // Golden burst cascading from the top
       setTimeout(() => {
         window.confetti({
           particleCount: 30,
@@ -265,7 +267,7 @@ const CrackerAnimation = ({ show }: { show: boolean }) => {
         });
       }, 600);
 
-      // 連続する小さなconfetti爆発
+      // Continuous small bursts for sparkle
       const duration = 3000;
       const end = Date.now() + duration;
 
@@ -296,7 +298,7 @@ const CrackerAnimation = ({ show }: { show: boolean }) => {
     runConfetti();
   }, [show, isScriptLoaded]);
 
-  // canvas-confettiを使うので、DOM要素は不要
+  // canvas-confetti renders directly, so no JSX element is required
   return null;
 };
 
@@ -315,6 +317,7 @@ function ComplaintRow({
   color: "red" | "orange" | "blue";
   comment?: string;
 }) {
+  const { t } = useLanguage();
   const colorClasses: Record<typeof color, string> = {
     red: "bg-red-100 border-red-200 text-red-700",
     orange: "bg-orange-100 border-orange-200 text-orange-700",
@@ -331,18 +334,22 @@ function ComplaintRow({
         <div className="flex items-center gap-2">
           <div className="px-4 py-2 rounded-full bg-white bg-opacity-40 min-w-[140px] text-center">
             <span className="font-bold text-base">
-              スコア: {score.toFixed(1)}
+              {t("result.team.scoreLabel")} {score.toFixed(1)}
             </span>
           </div>
           <div className="px-4 py-2 rounded-full bg-white bg-opacity-40 min-w-[90px] text-center">
-            <span className="font-bold text-base">{complaintsCount} 件</span>
+            <span className="font-bold text-base">
+              {t("result.team.complaintCount", { count: complaintsCount })}
+            </span>
           </div>
         </div>
       </div>
       {comment && (
         <div className="mt-2 px-3 py-2 bg-white bg-opacity-50 rounded-lg flex items-start gap-2">
           <span className="text-lg">💬</span>
-          <span className="text-xl font-medium">「{comment}」</span>
+          <span className="text-xl font-medium">
+            {t("result.team.commentQuote", { comment })}
+          </span>
         </div>
       )}
     </div>
@@ -362,7 +369,8 @@ function TeamResultCard({
   gameResultData?: GameResult;
   animationStep?: number;
 }) {
-  // 村民の声を感情別に分けて選択
+  const { t } = useLanguage();
+  // Select villager comments by sentiment for display
   const selectedComments = useMemo(() => {
     if (!gameResultData?.villagersTexts) return { left: null, right: null };
 
@@ -386,7 +394,7 @@ function TeamResultCard({
       comments.push(gameResultData.villagersTexts.train);
     }
 
-    // コメントを感情別に分類
+    // Split comments based on sentiment buckets
     const positiveComments = comments.filter(
       (comment) => comment.sentiment === "positive"
     );
@@ -397,21 +405,21 @@ function TeamResultCard({
     let leftComment = null;
     let rightComment = null;
 
-    // positiveコメントがある場合は左に表示
+    // Put a positive comment on the left when we have one
     if (positiveComments.length > 0) {
       leftComment =
         positiveComments[Math.floor(Math.random() * positiveComments.length)];
     }
 
-    // negativeコメントがある場合は右に表示
+    // Put a negative comment on the right if we have one
     if (negativeComments.length > 0) {
       rightComment =
         negativeComments[Math.floor(Math.random() * negativeComments.length)];
     }
 
-    // どちらかが0の場合の処理
+    // Fallback when either sentiment bucket is empty
     if (positiveComments.length === 0 && negativeComments.length > 0) {
-      // negativeのみの場合、両方にnegativeを表示
+      // If we only have negative comments, mirror them on both sides
       leftComment =
         negativeComments[Math.floor(Math.random() * negativeComments.length)];
       if (negativeComments.length > 1) {
@@ -419,24 +427,36 @@ function TeamResultCard({
         do {
           rightIndex = Math.floor(Math.random() * negativeComments.length);
         } while (
-          rightIndex === negativeComments.indexOf(leftComment) &&
+          negativeComments[rightIndex] === leftComment &&
           negativeComments.length > 1
         );
         rightComment = negativeComments[rightIndex];
+      } else {
+        rightComment = leftComment;
       }
     } else if (negativeComments.length === 0 && positiveComments.length > 0) {
-      // positiveのみの場合、両方にpositiveを表示
-      leftComment =
+      // If only positive comments exist, duplicate them for both slots
+      rightComment =
         positiveComments[Math.floor(Math.random() * positiveComments.length)];
       if (positiveComments.length > 1) {
-        let rightIndex;
+        let leftIndex;
         do {
-          rightIndex = Math.floor(Math.random() * positiveComments.length);
+          leftIndex = Math.floor(Math.random() * positiveComments.length);
         } while (
-          rightIndex === positiveComments.indexOf(leftComment) &&
+          positiveComments[leftIndex] === rightComment &&
           positiveComments.length > 1
         );
-        rightComment = positiveComments[rightIndex];
+        leftComment = positiveComments[leftIndex];
+      } else {
+        leftComment = rightComment;
+      }
+    } else {
+      // Ensure both slots are filled when only one comment was assigned
+      if (!leftComment && rightComment) {
+        leftComment = rightComment;
+      }
+      if (!rightComment && leftComment) {
+        rightComment = leftComment;
       }
     }
 
@@ -446,7 +466,7 @@ function TeamResultCard({
   return (
     <div>
       <div className="bg-white rounded-3xl shadow-2xl p-8 border-4 border-gray-200">
-        {/* チーム名 */}
+        {/* Team heading */}
         <div
           className={`text-center mb-6 transform transition-all duration-700 ${
             animationStep >= 0
@@ -463,7 +483,7 @@ function TeamResultCard({
           </h2>
         </div>
 
-        {/* 総発電量と円グラフ */}
+        {/* Total power summary and pie chart */}
         <div
           className={`mb-8 flex gap-6 transform transition-all duration-700 delay-300 ${
             animationStep >= 1
@@ -471,7 +491,7 @@ function TeamResultCard({
               : "translate-y-8 opacity-0 scale-95"
           }`}
         >
-          {/* 総発電量 */}
+          {/* Total power card */}
           <div
             className={`flex-1 p-6 rounded-2xl border-2 flex flex-col justify-center ${
               color === "blue"
@@ -484,7 +504,7 @@ function TeamResultCard({
                 color === "blue" ? "text-blue-800" : "text-red-800"
               }`}
             >
-              総発電量(kWh)
+              {t("result.summary.totalPowerLabel")}
             </span>
             <div className="text-center">
               <div
@@ -497,7 +517,7 @@ function TeamResultCard({
             </div>
           </div>
 
-          {/* 発電割合円グラフ */}
+          {/* Energy mix pie chart */}
           <div className="flex-shrink-0">
             <PowerGenerationPieChart
               gameResultData={gameResultData}
@@ -506,7 +526,7 @@ function TeamResultCard({
           </div>
         </div>
 
-        {/* 最大瞬間発電量 */}
+        {/* Peak output panel */}
         <div
           className={`mb-8 p-6 bg-gradient-to-r from-yellow-100 to-orange-100 rounded-2xl border-2 border-yellow-300 transform transition-all duration-700 delay-600 ${
             animationStep >= 2
@@ -515,13 +535,15 @@ function TeamResultCard({
           }`}
         >
           <span className="text-2xl font-bold text-orange-800 mb-4 block">
-            最大瞬間発電量
+            {t("result.summary.maxInstantTitle")}
           </span>
 
           <div className="grid grid-cols-2 gap-4">
-            {/* 地熱発電 */}
+            {/* Geothermal block */}
             <div className="bg-white bg-opacity-60 rounded-lg p-4 text-center">
-              <div className="text-red-600 text-lg mb-2">地熱</div>
+              <div className="text-red-600 text-lg mb-2">
+                {t("energy.geothermal")}
+              </div>
               <div className="text-2xl font-bold text-red-700">
                 {gameResultData?.geothermalMaximumInstantaneousPowerGeneration?.toFixed(
                   2
@@ -530,9 +552,11 @@ function TeamResultCard({
               </div>
             </div>
 
-            {/* 太陽光発電 */}
+            {/* Solar block */}
             <div className="bg-white bg-opacity-60 rounded-lg p-4 text-center">
-              <div className="text-yellow-600 text-lg mb-2">太陽光</div>
+              <div className="text-yellow-600 text-lg mb-2">
+                {t("energy.solar")}
+              </div>
               <div className="text-2xl font-bold text-yellow-700">
                 {gameResultData?.solarMaximumInstantaneousPowerGeneration?.toFixed(
                   2
@@ -541,9 +565,11 @@ function TeamResultCard({
               </div>
             </div>
 
-            {/* 風力発電 */}
+            {/* Wind block */}
             <div className="bg-white bg-opacity-60 rounded-lg p-4 text-center">
-              <div className="text-green-600 text-lg mb-2">風力</div>
+              <div className="text-green-600 text-lg mb-2">
+                {t("energy.wind")}
+              </div>
               <div className="text-2xl font-bold text-green-700">
                 {gameResultData?.windMaximumInstantaneousPowerGeneration?.toFixed(
                   2
@@ -552,9 +578,11 @@ function TeamResultCard({
               </div>
             </div>
 
-            {/* 人力発電 */}
+            {/* Human power block */}
             <div className="bg-white bg-opacity-60 rounded-lg p-4 text-center">
-              <div className="text-blue-600 text-lg mb-2">人力</div>
+              <div className="text-blue-600 text-lg mb-2">
+                {t("energy.hydrogen")}
+              </div>
               <div className="text-2xl font-bold text-blue-700">
                 {gameResultData?.hydrogenMaximumInstantaneousPowerGeneration?.toFixed(
                   2
@@ -565,7 +593,7 @@ function TeamResultCard({
           </div>
         </div>
 
-        {/* CO₂削減量 */}
+        {/* CO₂ reduction */}
         <div
           className={`mb-8 p-6 bg-gradient-to-r from-green-100 to-emerald-100 rounded-2xl border-2 border-green-300 transform transition-all duration-700 delay-900 ${
             animationStep >= 3
@@ -573,7 +601,9 @@ function TeamResultCard({
               : "translate-y-8 opacity-0 scale-95"
           }`}
         >
-          <span className="text-2xl font-bold text-green-800">CO₂削減量</span>
+          <span className="text-2xl font-bold text-green-800">
+            {t("result.team.co2Title")}
+          </span>
           <div className="text-center">
             <div className="text-5xl font-bold text-green-700">
               {gameResultData?.co2ReductionAmount?.toFixed(2) || "0.00"} kg
@@ -581,7 +611,7 @@ function TeamResultCard({
           </div>
         </div>
 
-        {/* 幸福度 */}
+        {/* Town comfort summary */}
         <div
           className={`p-6 bg-gradient-to-r from-purple-100 to-pink-100 rounded-2xl border-2 border-purple-300 transform transition-all duration-700 delay-1200 ${
             animationStep >= 4
@@ -590,7 +620,7 @@ function TeamResultCard({
           }`}
         >
           <span className="text-2xl font-bold text-purple-800">
-            街の暮らしやすさ
+            {t("result.team.happinessTitle")}
           </span>
           <div className="text-center">
             <div className="text-5xl font-bold text-purple-700 mb-3"></div>
@@ -599,7 +629,7 @@ function TeamResultCard({
           <div className="space-y-3 mb-6">
             <ComplaintRow
               icon="🌿"
-              label="環境問題（CO₂・騒音）"
+              label={t("result.team.happiness.environment")}
               score={gameResultData?.happiness.environmentProblemScore || 0}
               complaintsCount={
                 gameResultData?.happiness.environmentProblemNumber || 0
@@ -611,7 +641,7 @@ function TeamResultCard({
             />
             <ComplaintRow
               icon="⚡"
-              label="電力安定性（停電回数）"
+              label={t("result.team.happiness.power")}
               score={gameResultData?.happiness.powerStabilityScore || 0}
               complaintsCount={
                 gameResultData?.happiness.powerStabilityNumber || 0
@@ -621,7 +651,7 @@ function TeamResultCard({
             />
             <ComplaintRow
               icon="🏢"
-              label="インフラ（家・電車・お店）"
+              label={t("result.team.happiness.infrastructure")}
               score={gameResultData?.happiness.infrastructureComfortScore || 0}
               complaintsCount={
                 gameResultData?.happiness.infrastructureComfortNumber || 0
@@ -633,12 +663,12 @@ function TeamResultCard({
             />
           </div>
 
-          {/* 村人の声 */}
+          {/* Villager feedback snippets */}
           {gameResultData?.villagersTexts &&
             (selectedComments.left || selectedComments.right) && (
               <div>
                 <h4 className="text-lg font-bold text-purple-800 mb-3">
-                  その他の声
+                  {t("result.team.additionalVoices")}
                 </h4>
                 <div className="grid grid-cols-2 gap-3">
                   {selectedComments.left && (
@@ -659,7 +689,7 @@ function TeamResultCard({
         </div>
       </div>
 
-      {/* グラフ */}
+      {/* Power chart */}
       <section
         className={`flex-1 border rounded-4xl bg-white shadow-2xl p-6 mt-6 transform transition-all duration-700 delay-1500 ${
           animationStep >= 5
@@ -674,6 +704,7 @@ function TeamResultCard({
 }
 
 export default function ResultPage() {
+  const { t } = useLanguage();
   const [resultData, setResultData] = useState<ResultData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -710,48 +741,55 @@ export default function ResultPage() {
 
         setResultData({ team1: data1, team2: data2 });
       } catch {
-        setError("データ取得失敗");
+        setError(t("result.page.fetchError"));
       } finally {
         setLoading(false);
       }
     };
 
     fetchResultData();
-  }, []);
+  }, [t]);
 
-  // アニメーション制御
+  // Animation timeline control
   useEffect(() => {
     if (!loading && resultData) {
       const steps = [0, 1, 2, 3, 4, 5];
       steps.forEach((step, index) => {
         setTimeout(() => {
           setAnimationStep(step);
-        }, index * 500); // 0.5秒間隔で順番に表示
+        }, index * 500); // Stagger each reveal by 0.5 seconds
       });
 
-      // 全てのアニメーション完了後にクラッカーを表示
+      // Reveal confetti once every animation block finishes
       setTimeout(() => {
         setShowCracker(true);
-        // 5秒後にクラッカーを非表示
+        // Hide the confetti overlay after five seconds
         setTimeout(() => {
           setShowCracker(false);
         }, 5000);
-      }, steps.length * 500 + 1000); // 全アニメーション完了から1秒後
+      }, steps.length * 500 + 1000); // One second after all animations end
     }
   }, [loading, resultData]);
 
-  // --- スピナー付きローディング画面 ---
+  // --- Loading screen with spinner ---
   if (loading)
     return (
       <div className="flex items-center justify-center min-h-screen bg-gradient-to-b from-[rgb(194,238,112)] to-[rgb(60,223,156)]">
         <div className="flex flex-col items-center">
           <div className="w-16 h-16 border-4 border-blue-400 border-t-transparent rounded-full animate-spin mb-4"></div>
-          <p className="text-xl font-bold text-gray-700">ロード中...</p>
+          <p className="text-xl font-bold text-gray-700">
+            {t("result.page.loading")}
+          </p>
         </div>
       </div>
     );
 
-  if (error || !resultData) return <div>エラー: {error}</div>;
+  if (error || !resultData)
+    return (
+      <div>
+        {t("result.page.error")}: {error}
+      </div>
+    );
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-[rgb(194,238,112)] to-[rgb(60,223,156)] p-6">
@@ -782,11 +820,11 @@ export default function ResultPage() {
           onClick={() => (window.location.href = "/dashboard")}
           className="bg-gradient-to-r bg-white text-black font-bold py-4 px-10 rounded-full shadow-2xl transform hover:scale-110  duration-300 text-xl"
         >
-          ダッシュボードに戻る
+          {t("result.page.backButton")}
         </button>
       </div>
 
-      {/* クラッカーアニメーション */}
+      {/* Confetti animation */}
       <CrackerAnimation show={showCracker} />
     </div>
   );

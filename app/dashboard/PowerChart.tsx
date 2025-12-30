@@ -14,6 +14,9 @@ import {
   Filler,
 } from "chart.js";
 
+import { useLanguage } from "../../components/LanguageProvider";
+import { shiftTimeLabelByHours } from "../../lib/time";
+
 ChartJS.register(
   CategoryScale,
   LinearScale,
@@ -39,6 +42,7 @@ interface PowerLineChartProps {
 }
 
 export const PowerLineChart = ({ sessionId }: PowerLineChartProps) => {
+  const { t } = useLanguage();
   const [data, setData] = useState<PowerChartData | null>(null);
   const [loading, setLoading] = useState(true); // 初期状態はloading true（全体表示でデータ取得）
   const [error, setError] = useState<string | null>(null);
@@ -49,6 +53,13 @@ export const PowerLineChart = ({ sessionId }: PowerLineChartProps) => {
 
   const [totalPower, setTotalPower] = useState<number>(0); // 総発電量
   const [filterTime, setFilterTime] = useState(""); // 時間フィルター用の時間
+
+  const startLabel = t("chart.buttons.start");
+  const stopLabel = t("chart.buttons.stop");
+  const clearLabel = t("chart.buttons.clear");
+  const fullViewLabel = t("chart.buttons.fullView");
+  const filterLabel = t("chart.filterLabel");
+  const filterPlaceholder = t("chart.filterPlaceholder");
 
   useEffect(() => {
     let intervalId: NodeJS.Timeout;
@@ -173,79 +184,80 @@ export const PowerLineChart = ({ sessionId }: PowerLineChartProps) => {
     setLoading(true);
   };
 
+  const renderControlPanel = () => (
+    <div className="flex items-center justify-center gap-6 mb-4">
+      <div className="flex gap-2">
+        <button
+          onClick={handleStart}
+          disabled={isRunning}
+          className={`px-4 py-2 rounded font-semibold ${
+            isRunning
+              ? "bg-gray-300 text-gray-500 cursor-not-allowed"
+              : "bg-green-500 text-white hover:bg-green-600"
+          }`}
+        >
+          {startLabel}
+        </button>
+        <button
+          onClick={handleStop}
+          disabled={!isRunning}
+          className={`px-4 py-2 rounded font-semibold ${
+            !isRunning
+              ? "bg-gray-300 text-gray-500 cursor-not-allowed"
+              : "bg-red-500 text-white hover:bg-red-600"
+          }`}
+        >
+          {stopLabel}
+        </button>
+        <button
+          onClick={handleClear}
+          className="px-4 py-2 rounded font-semibold bg-blue-500 text-white hover:bg-blue-600"
+        >
+          {clearLabel}
+        </button>
+        <button
+          onClick={handleFullView}
+          disabled={isFullView}
+          className={`px-4 py-2 rounded font-semibold ${
+            isFullView
+              ? "bg-gray-300 text-gray-500 cursor-not-allowed"
+              : "bg-purple-500 text-white hover:bg-purple-600"
+          }`}
+        >
+          {fullViewLabel}
+        </button>
+      </div>
+
+      <div className="px-4 py-2 rounded font-semibold bg-blue-100 border border-blue-300 text-blue-800">
+        {t("chart.totalPower", { value: totalPower.toFixed(2) })}
+      </div>
+
+      <div className="flex items-center gap-2">
+        <label className="text-sm font-medium text-gray-700">
+          {filterLabel}
+        </label>
+        <input
+          type="time"
+          value={filterTime}
+          onChange={(e) => setFilterTime(e.target.value)}
+          className="px-3 py-1 border border-gray-300 rounded text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+          step="1"
+          placeholder={filterPlaceholder}
+        />
+      </div>
+    </div>
+  );
+
   if (loading && isRunning) {
     return (
       <div className="w-full">
-        {/* コントロールボタンと総発電量 */}
-        <div className="flex items-center justify-center gap-6 mb-4">
-          <div className="flex gap-2">
-            <button
-              onClick={handleStart}
-              disabled={isRunning}
-              className={`px-4 py-2 rounded font-semibold ${
-                isRunning
-                  ? "bg-gray-300 text-gray-500 cursor-not-allowed"
-                  : "bg-green-500 text-white hover:bg-green-600"
-              }`}
-            >
-              スタート
-            </button>
-            <button
-              onClick={handleStop}
-              disabled={!isRunning}
-              className={`px-4 py-2 rounded font-semibold ${
-                !isRunning
-                  ? "bg-gray-300 text-gray-500 cursor-not-allowed"
-                  : "bg-red-500 text-white hover:bg-red-600"
-              }`}
-            >
-              ストップ
-            </button>
-            <button
-              onClick={handleClear}
-              className="px-4 py-2 rounded font-semibold bg-blue-500 text-white hover:bg-blue-600"
-            >
-              クリア
-            </button>
-            <button
-              onClick={handleFullView}
-              disabled={isFullView}
-              className={`px-4 py-2 rounded font-semibold ${
-                isFullView
-                  ? "bg-gray-300 text-gray-500 cursor-not-allowed"
-                  : "bg-purple-500 text-white hover:bg-purple-600"
-              }`}
-            >
-              全体表示
-            </button>
-          </div>
-
-          {/* 総発電量表示 */}
-          <div className="px-4 py-2 rounded font-semibold bg-blue-100 border border-blue-300 text-blue-800">
-            総発電量 {totalPower.toFixed(2)}kWh
-          </div>
-
-          {/* 時間フィルター */}
-          <div className="flex items-center gap-2">
-            <label className="text-sm font-medium text-gray-700">
-              表示開始時刻:
-            </label>
-            <input
-              type="time"
-              value={filterTime}
-              onChange={(e) => setFilterTime(e.target.value)}
-              className="px-3 py-1 border border-gray-300 rounded text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-              step="1"
-              placeholder="例: 14:30:00"
-            />
-          </div>
-        </div>
+        {renderControlPanel()}
 
         {/* ローディング画面 */}
         <div className="flex items-center justify-center h-96 bg-gray-50 rounded border-2 border-dashed border-gray-300">
           <div className="text-center">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-500 mx-auto mb-4"></div>
-            <p className="text-gray-500 text-lg">データを読み込み中です...</p>
+            <p className="text-gray-500 text-lg">{t("chart.loading")}</p>
           </div>
         </div>
       </div>
@@ -255,77 +267,14 @@ export const PowerLineChart = ({ sessionId }: PowerLineChartProps) => {
   if (error) {
     return (
       <div className="w-full">
-        {/* コントロールボタンと総発電量 */}
-        <div className="flex items-center justify-center gap-6 mb-4">
-          <div className="flex gap-2">
-            <button
-              onClick={handleStart}
-              disabled={isRunning}
-              className={`px-4 py-2 rounded font-semibold ${
-                isRunning
-                  ? "bg-gray-300 text-gray-500 cursor-not-allowed"
-                  : "bg-green-500 text-white hover:bg-green-600"
-              }`}
-            >
-              スタート
-            </button>
-            <button
-              onClick={handleStop}
-              disabled={!isRunning}
-              className={`px-4 py-2 rounded font-semibold ${
-                !isRunning
-                  ? "bg-gray-300 text-gray-500 cursor-not-allowed"
-                  : "bg-red-500 text-white hover:bg-red-600"
-              }`}
-            >
-              ストップ
-            </button>
-            <button
-              onClick={handleClear}
-              className="px-4 py-2 rounded font-semibold bg-blue-500 text-white hover:bg-blue-600"
-            >
-              クリア
-            </button>
-            <button
-              onClick={handleFullView}
-              disabled={isFullView}
-              className={`px-4 py-2 rounded font-semibold ${
-                isFullView
-                  ? "bg-gray-300 text-gray-500 cursor-not-allowed"
-                  : "bg-purple-500 text-white hover:bg-purple-600"
-              }`}
-            >
-              全体表示
-            </button>
-          </div>
-
-          {/* 総発電量表示 */}
-          <div className="px-4 py-2 rounded font-semibold bg-blue-100 border border-blue-300 text-blue-800">
-            総発電量 {totalPower.toFixed(2)}kWh
-          </div>
-
-          {/* 時間フィルター */}
-          <div className="flex items-center gap-2">
-            <label className="text-sm font-medium text-gray-700">
-              表示開始時刻:
-            </label>
-            <input
-              type="time"
-              value={filterTime}
-              onChange={(e) => setFilterTime(e.target.value)}
-              className="px-3 py-1 border border-gray-300 rounded text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-              step="1"
-              placeholder="例: 14:30:00"
-            />
-          </div>
-        </div>
+        {renderControlPanel()}
 
         {/* エラー画面 */}
         <div className="flex items-center justify-center h-96 bg-red-50 rounded border-2 border-dashed border-red-300">
           <div className="text-center">
             <div className="text-red-500 text-4xl mb-4">⚠️</div>
             <p className="text-red-600 text-lg font-semibold mb-2">
-              エラーが発生しました
+              {t("chart.errorTitle")}
             </p>
             <p className="text-red-500 text-sm">{error}</p>
           </div>
@@ -353,28 +302,35 @@ export const PowerLineChart = ({ sessionId }: PowerLineChartProps) => {
   };
 
   // 時間フィルタリング関数
-  const filterDataByTime = (data: typeof safeDisplayData) => {
-    if (filterTime.trim() === "") {
-      return data;
-    }
+  const filterDataByTime = (dataset: typeof safeDisplayData) => {
+    const result = {
+      timeLabels: [] as string[],
+      geothermal: [] as number[],
+      hydro: [] as number[],
+      wind: [] as number[],
+      solar: [] as number[],
+    };
 
-    const filterTimeInSeconds = timeToSeconds(filterTime);
-    const filteredIndices: number[] = [];
+    const trimmedFilter = filterTime.trim();
+    const hasFilter = trimmedFilter !== "";
+    const filterSeconds = hasFilter ? timeToSeconds(trimmedFilter) : null;
 
-    data.timeLabels.forEach((label, index) => {
-      const labelTimeInSeconds = timeToSeconds(label);
-      if (labelTimeInSeconds >= filterTimeInSeconds) {
-        filteredIndices.push(index);
+    dataset.timeLabels.forEach((label, index) => {
+      const shiftedLabel = shiftTimeLabelByHours(label, 9);
+      const labelSeconds = timeToSeconds(shiftedLabel);
+      if (
+        !hasFilter ||
+        (filterSeconds !== null && labelSeconds >= filterSeconds)
+      ) {
+        result.timeLabels.push(shiftedLabel);
+        result.geothermal.push(dataset.geothermal[index]);
+        result.hydro.push(dataset.hydro[index]);
+        result.wind.push(dataset.wind[index]);
+        result.solar.push(dataset.solar[index]);
       }
     });
 
-    return {
-      timeLabels: filteredIndices.map((i) => data.timeLabels[i]),
-      geothermal: filteredIndices.map((i) => data.geothermal[i]),
-      hydro: filteredIndices.map((i) => data.hydro[i]),
-      wind: filteredIndices.map((i) => data.wind[i]),
-      solar: filteredIndices.map((i) => data.solar[i]),
-    };
+    return result;
   };
 
   // フィルタリングされたデータを取得
@@ -391,28 +347,28 @@ export const PowerLineChart = ({ sessionId }: PowerLineChartProps) => {
     labels,
     datasets: [
       {
-        label: "地熱",
+        label: t("energy.geothermalShort"),
         data: geothermalData,
         borderColor: "#f87171",
         backgroundColor: "rgba(248,113,113,0.4)",
         fill: true,
       },
       {
-        label: "太陽光",
+        label: t("energy.solarShort"),
         data: solarData,
         borderColor: "#fbbf24",
         backgroundColor: "rgba(251,191,36,0.4)",
         fill: "-1",
       },
       {
-        label: "風力",
+        label: t("energy.windShort"),
         data: windData,
         borderColor: "#34d399",
         backgroundColor: "rgba(52,211,153,0.4)",
         fill: "-1",
       },
       {
-        label: "人力発電",
+        label: t("energy.hydrogenShort"),
         data: hydroData,
         borderColor: "#60a5fa",
         backgroundColor: "rgba(96,165,250,0.4)",
@@ -427,7 +383,7 @@ export const PowerLineChart = ({ sessionId }: PowerLineChartProps) => {
       legend: { position: "top" as const },
       title: {
         display: true,
-        text: "各モジュールにおける発電能力の推移",
+        text: t("chart.title"),
         font: {
           size: 20,
           weight: "bold" as const,
@@ -440,7 +396,7 @@ export const PowerLineChart = ({ sessionId }: PowerLineChartProps) => {
         beginAtZero: true,
         title: {
           display: true,
-          text: "発電能力(kW)",
+          text: t("chart.axis.power"),
           font: {
             size: 20,
             weight: "bold" as const,
@@ -456,7 +412,7 @@ export const PowerLineChart = ({ sessionId }: PowerLineChartProps) => {
         stacked: true,
         title: {
           display: true,
-          text: "時間",
+          text: t("chart.axis.time"),
           font: {
             size: 20,
             weight: "bold" as const,
@@ -473,70 +429,7 @@ export const PowerLineChart = ({ sessionId }: PowerLineChartProps) => {
 
   return (
     <div className="w-full">
-      {/* コントロールボタンと総発電量 */}
-      <div className="flex items-center justify-center gap-6 mb-4">
-        <div className="flex gap-2">
-          <button
-            onClick={handleStart}
-            disabled={isRunning}
-            className={`px-4 py-2 rounded font-semibold ${
-              isRunning
-                ? "bg-gray-300 text-gray-500 cursor-not-allowed"
-                : "bg-green-500 text-white hover:bg-green-600"
-            }`}
-          >
-            スタート
-          </button>
-          <button
-            onClick={handleStop}
-            disabled={!isRunning}
-            className={`px-4 py-2 rounded font-semibold ${
-              !isRunning
-                ? "bg-gray-300 text-gray-500 cursor-not-allowed"
-                : "bg-red-500 text-white hover:bg-red-600"
-            }`}
-          >
-            ストップ
-          </button>
-          <button
-            onClick={handleClear}
-            className="px-4 py-2 rounded font-semibold bg-blue-500 text-white hover:bg-blue-600"
-          >
-            クリア
-          </button>
-          <button
-            onClick={handleFullView}
-            disabled={isFullView}
-            className={`px-4 py-2 rounded font-semibold ${
-              isFullView
-                ? "bg-gray-300 text-gray-500 cursor-not-allowed"
-                : "bg-purple-500 text-white hover:bg-purple-600"
-            }`}
-          >
-            全体表示
-          </button>
-        </div>
-
-        {/* 総発電量表示 */}
-        <div className="px-4 py-2 rounded font-semibold bg-blue-100 border border-blue-300 text-blue-800">
-          総発電量 {totalPower.toFixed(2)}kWh
-        </div>
-
-        {/* 時間フィルター */}
-        <div className="flex items-center gap-2">
-          <label className="text-sm font-medium text-gray-700">
-            表示開始時刻:
-          </label>
-          <input
-            type="time"
-            value={filterTime}
-            onChange={(e) => setFilterTime(e.target.value)}
-            className="px-3 py-1 border border-gray-300 rounded text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-            step="1"
-            placeholder="例: 14:30:00"
-          />
-        </div>
-      </div>
+      {renderControlPanel()}
 
       {/* グラフ */}
       <Line data={chartData} options={options} />

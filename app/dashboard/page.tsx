@@ -1,17 +1,23 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useLanguage } from "../../components/LanguageProvider";
 import { Gauge } from "./Gauge";
 import { PowerLineChart } from "./PowerChart";
 import { PowerMap } from "./Map";
 
 export default function DashboardPage() {
+  const { language, toggleLanguage, t } = useLanguage();
   const [team1Name, setTeam1Name] = useState("");
   const [team2Name, setTeam2Name] = useState("");
   const [sessionId1, setSessionId1] = useState("");
   const [sessionId2, setSessionId2] = useState("");
   const [isConfigComplete, setIsConfigComplete] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const languageToggleLabel =
+    language === "ja"
+      ? t("dashboard.menu.switchToEnglish")
+      : t("dashboard.menu.switchToJapanese");
 
   // 初期ロード時にlocalStorageから値を取得
   useEffect(() => {
@@ -55,7 +61,7 @@ export default function DashboardPage() {
 
   const handleSave = () => {
     if (!team1Name || !team2Name || !sessionId1 || !sessionId2) {
-      alert("すべての項目を入力してください");
+      alert(t("dashboard.alert.fillAll"));
       return;
     }
     localStorage.setItem("team1Name", team1Name);
@@ -67,9 +73,7 @@ export default function DashboardPage() {
   };
 
   const handleReset = () => {
-    if (
-      confirm("設定をリセットしますか？チーム名とセッションIDが削除されます。")
-    ) {
+    if (confirm(t("dashboard.confirm.reset"))) {
       localStorage.removeItem("team1Name");
       localStorage.removeItem("team2Name");
       localStorage.removeItem("sessionId1");
@@ -120,6 +124,28 @@ export default function DashboardPage() {
             <div className="absolute top-full right-0 mt-2 w-48 bg-white border border-gray-300 rounded-lg shadow-xl py-2">
               <button
                 onClick={() => {
+                  toggleLanguage();
+                  setIsMenuOpen(false);
+                }}
+                className="w-full px-4 py-3 text-left hover:bg-green-50 hover:text-green-600 transition-colors duration-200 flex items-center"
+              >
+                <svg
+                  className="w-4 h-4 mr-2"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M12 3v2m0 14v2m9-9h-2M5 12H3m15.364 6.364l-1.414-1.414M7.05 7.05 5.636 5.636m12.728 0L16.95 7.05M7.05 16.95l-1.414 1.414"
+                  />
+                </svg>
+                {languageToggleLabel}
+              </button>
+              <button
+                onClick={() => {
                   // 現在は適当なページに遷移
                   window.location.href = "/result";
                   setIsMenuOpen(false);
@@ -139,7 +165,7 @@ export default function DashboardPage() {
                     d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
                   />
                 </svg>
-                リザルト画面へ
+                {t("dashboard.menu.goResult")}
               </button>
               <button
                 onClick={handleReset}
@@ -158,7 +184,7 @@ export default function DashboardPage() {
                     d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
                   />
                 </svg>
-                設定をリセット
+                {t("dashboard.menu.reset")}
               </button>
             </div>
           )}
@@ -171,7 +197,7 @@ export default function DashboardPage() {
           {/* モーダル本体 */}
           <div className="relative bg-white rounded-2xl shadow-2xl p-8 w-fit max-w-4xl z-10">
             <h1 className="text-2xl font-bold mb-6 text-center">
-              チーム情報を入力してください
+              {t("dashboard.modal.title")}
             </h1>
 
             {/* 2チーム横並びレイアウト */}
@@ -179,26 +205,30 @@ export default function DashboardPage() {
               {/* Team 1 */}
               <div className="flex-1 min-w-72">
                 <h2 className="text-lg font-semibold mb-4 text-center text-blue-600">
-                  Team 1
+                  {t("dashboard.modal.teamHeading", { teamNumber: 1 })}
                 </h2>
                 <div className="mb-4">
-                  <label className="block mb-2 font-medium">チーム名</label>
+                  <label className="block mb-2 font-medium">
+                    {t("dashboard.modal.teamNameLabel")}
+                  </label>
                   <input
                     type="text"
                     value={team1Name}
                     onChange={(e) => setTeam1Name(e.target.value)}
                     className="w-full border border-gray-300 p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                    placeholder="例: 寿司"
+                    placeholder={t("dashboard.modal.teamNamePlaceholder1")}
                   />
                 </div>
                 <div className="mb-4">
-                  <label className="block mb-2 font-medium">Session ID</label>
+                  <label className="block mb-2 font-medium">
+                    {t("dashboard.modal.sessionIdLabel")}
+                  </label>
                   <input
                     type="text"
                     value={sessionId1}
                     onChange={(e) => setSessionId1(e.target.value)}
                     className="w-full border border-gray-300 p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                    placeholder="例: session1"
+                    placeholder={t("dashboard.modal.sessionPlaceholder1")}
                   />
                 </div>
               </div>
@@ -209,26 +239,30 @@ export default function DashboardPage() {
               {/* Team 2 */}
               <div className="flex-1 min-w-72">
                 <h2 className="text-lg font-semibold mb-4 text-center text-red-600">
-                  Team 2
+                  {t("dashboard.modal.teamHeading", { teamNumber: 2 })}
                 </h2>
                 <div className="mb-4">
-                  <label className="block mb-2 font-medium">チーム名</label>
+                  <label className="block mb-2 font-medium">
+                    {t("dashboard.modal.teamNameLabel")}
+                  </label>
                   <input
                     type="text"
                     value={team2Name}
                     onChange={(e) => setTeam2Name(e.target.value)}
                     className="w-full border border-gray-300 p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent"
-                    placeholder="例: 天ぷら"
+                    placeholder={t("dashboard.modal.teamNamePlaceholder2")}
                   />
                 </div>
                 <div className="mb-4">
-                  <label className="block mb-2 font-medium">Session ID</label>
+                  <label className="block mb-2 font-medium">
+                    {t("dashboard.modal.sessionIdLabel")}
+                  </label>
                   <input
                     type="text"
                     value={sessionId2}
                     onChange={(e) => setSessionId2(e.target.value)}
                     className="w-full border border-gray-300 p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent"
-                    placeholder="例: session2"
+                    placeholder={t("dashboard.modal.sessionPlaceholder2")}
                   />
                 </div>
               </div>
@@ -238,7 +272,7 @@ export default function DashboardPage() {
               onClick={handleSave}
               className="w-full bg-blue-500 text-white py-3 px-6 rounded-lg hover:bg-blue-600 transition-colors duration-200 font-medium"
             >
-              決定
+              {t("dashboard.modal.submit")}
             </button>
           </div>
         </div>
@@ -251,12 +285,12 @@ export default function DashboardPage() {
           <section className="flex w-full mb-6">
             <div className="flex-1 flex justify-center">
               <p className="border rounded-2xl bg-white text-5xl font-bold px-8 py-4">
-                Team {team1Name}
+                {t("dashboard.section.teamTitle", { teamName: team1Name })}
               </p>
             </div>
             <div className="flex-1 flex justify-center">
               <p className="border rounded-2xl bg-white text-5xl font-bold px-8 py-4">
-                Team {team2Name}
+                {t("dashboard.section.teamTitle", { teamName: team2Name })}
               </p>
             </div>
           </section>
@@ -267,19 +301,25 @@ export default function DashboardPage() {
               <div className="grid grid-cols-4 gap-10 w-full">
                 <div className="flex flex-col items-center justify-center">
                   <Gauge deviceType="geothermal" sessionId={sessionId1} />
-                  <span className="font-bold text-2xl">地熱発電</span>
+                  <span className="font-bold text-2xl">
+                    {t("energy.geothermal")}
+                  </span>
                 </div>
                 <div className="flex flex-col items-center justify-center">
                   <Gauge deviceType="hydrogen" sessionId={sessionId1} />
-                  <span className="font-bold text-2xl">人力発電</span>
+                  <span className="font-bold text-2xl">
+                    {t("energy.hydrogen")}
+                  </span>
                 </div>
                 <div className="flex flex-col items-center justify-center">
                   <Gauge deviceType="wind" sessionId={sessionId1} />
-                  <span className="font-bold text-2xl">風力発電</span>
+                  <span className="font-bold text-2xl">{t("energy.wind")}</span>
                 </div>
                 <div className="flex flex-col items-center justify-center">
                   <Gauge deviceType="solar" sessionId={sessionId1} />
-                  <span className="font-bold text-2xl">太陽光発電</span>
+                  <span className="font-bold text-2xl">
+                    {t("energy.solar")}
+                  </span>
                 </div>
               </div>
             </section>
@@ -287,19 +327,25 @@ export default function DashboardPage() {
               <div className="grid grid-cols-4 gap-10 w-full">
                 <div className="flex flex-col items-center justify-center">
                   <Gauge deviceType="geothermal" sessionId={sessionId2} />
-                  <span className="font-bold text-2xl">地熱発電</span>
+                  <span className="font-bold text-2xl">
+                    {t("energy.geothermal")}
+                  </span>
                 </div>
                 <div className="flex flex-col items-center justify-center">
                   <Gauge deviceType="hydrogen" sessionId={sessionId2} />
-                  <span className="font-bold text-2xl">人力発電</span>
+                  <span className="font-bold text-2xl">
+                    {t("energy.hydrogen")}
+                  </span>
                 </div>
                 <div className="flex flex-col items-center justify-center">
                   <Gauge deviceType="wind" sessionId={sessionId2} />
-                  <span className="font-bold text-2xl">風力発電</span>
+                  <span className="font-bold text-2xl">{t("energy.wind")}</span>
                 </div>
                 <div className="flex flex-col items-center justify-center">
                   <Gauge deviceType="solar" sessionId={sessionId2} />
-                  <span className="font-bold text-2xl">太陽光発電</span>
+                  <span className="font-bold text-2xl">
+                    {t("energy.solar")}
+                  </span>
                 </div>
               </div>
             </section>
