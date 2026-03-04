@@ -360,16 +360,6 @@ export default function DashboardPage() {
               <PowerLineChart sessionId={sessionId2} />
             </section>
           </div>
-
-          {/* 地図 */}
-          <div className="flex gap-6 mb-6 mt-6">
-            <section className="border rounded-4xl bg-white shadow-2xl p-6 mb-6 flex-1">
-              <PowerMap mapId="map1" sessionId={sessionId1} />
-            </section>
-            <section className="border rounded-4xl bg-white shadow-2xl p-6 mb-6 flex-1">
-              <PowerMap mapId="map2" sessionId={sessionId2} />
-            </section>
-          </div>
         </div>
       )}
     </div>
